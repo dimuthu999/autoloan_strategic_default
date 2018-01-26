@@ -36,15 +36,18 @@ tw <- lb_data[lb_data$model %in% c("4 STROKE","2 STROKE","RE 205","RE 4S AUTORIC
                                "BAJAJ 4 S"),]
 tw['type'] = "threewheeler"
 
-mb <- lb_data[lb_data$make_model %in% c("HONDA DIO","BAJAJ PULSAR 150 UG4.5","YAMAHA RAY ZR","T V S WEGO","BAJAJ CT 100 UG","BAJAJ PULSAR 135 LS","BAJAJ PULSAR 150 UG4.5-DTSI 4S","YAMAHA FZ-S","BAJAJ PULSAR 150","HERO PLEASURE","BAJAJ PULSAR 150 UG4 S, DTSI 4S","YAMAHA FZ16","BAJAJ PLATINA ES UG-DTSI","BAJAJ CT 100","BAJAJ DISCOVER 125 ES DISC","BAJAJ PLATINA","BAJAJ PLATINA ES DRUM-BLACK AW","HERO HUNK DOUBLE DISC","HONDA DIO APDR 3","HONDA DIO-APDR-3","BAJAJ DISCOVER 125 DISC","YAMAHA #NAME?","BAJAJ CT 100 UG-100CC 4S","HERO HUNK","YAMAHA RAY-Z","BAJAJ DISCOVER 125 M DISC","BAJAJ DISCOVER 125 DISC-DTSI","BAJAJ PULSAR 150 UG4.5 DTSI","BAJAJ DISCOVER-125","T V S SCOOTY PEP+","T V S APACHE","BAJAJ DISCOVER 125 ST, DTSI 4S","HONDA DIO SCV-110 CC","HONDA DIO HET","HERO MAESTRO EDGE","BAJAJ PULSAR 180 UG4","YAMAHA FAZER","HONDA TWISTER","HONDA CD 110 DREAM","HERO I SMART","T V S SCOOTY PEP","YAMAHA RAY","HERO HONDA PLEASURE","HERO HF-DAWN","HERO DAWN","HERO DASH LX","HONDA DIO SCOOTER","HONDA DIO SCV","BAJAJ DISCOVER DTSSI100CC","BAJAJ PULSAR 200","HERO PLEASURE LX","BAJAJ PULSAR 180 UG4-DTSI 4S","HERO GLAMOUR","BAJAJ DISCOVER","HERO HONDA","BAJAJ PULSAR 200 NS-DTSI","HONDA DIO - 3","T V S APACHE 180","HERO DASH","YAMAHA ALPHA","HONDA DIO SCV110","YAMAHA FZ-S V2","HERO GLAMOUR DISC SELF CAST","BAJAJ PULSAR 160 NS","T V S WEGO SBS","BAJAJ V 15-DTSI","T V S ZEST","YAMAHA FACINO","YAMAHA FZS","BAJAJ DISCOVER 125M","HONDA CBF TWISTER","YAMAHA SALUTO","BAJAJ PLATINA KS DRUM-BLACK AW","BAJAJ DISCOVER 100 M","BAJAJ PULSAR 150 NS","BAJAJ PULSAR 150 NS DTSI","BAJAJ V-15","T V S APACHE 160","BAJAJ PULSAR 135","HONDA HORNET 160","T V S JUPITER","HERO DUET LX","T V S METRO ES","T V S APACHE 200","T V S APACHE 150","HERO HONDA HUNK","HERO XTREME","T V S APA-150","YAMAHA RAY ZR DISK","YAMAHA","BAJAJ PULSAR 150 AS","TVS WEGO","YAMAHA RAY ZR DRUM","HERO HONDA DIO","T V S SCOOTY ZEST","T V S STREAK","HONDA PLEASURE","YAMAHA FAZAR","T V S APA-180","BAJAJ DISCOVER 125 DRUM DTSI 4S","BAJAJ DISCOVER 125CC","BAJAJ DISCOVER 150 F-DISC","HERO XTREME SPORTS","HONDA DIO SUV 110","BAJAJ PULSAR 150 AS-DTSI","TVS METRO PLUS","T V S ZEST 110") &  !is.na(lb_data$valuation_org),]
-mb['type'] = "motorbike"
+# mb <- lb_data[lb_data$make_model %in% c("HONDA DIO","BAJAJ PULSAR 150 UG4.5","YAMAHA RAY ZR","T V S WEGO","BAJAJ CT 100 UG","BAJAJ PULSAR 135 LS","BAJAJ PULSAR 150 UG4.5-DTSI 4S","YAMAHA FZ-S","BAJAJ PULSAR 150","HERO PLEASURE","BAJAJ PULSAR 150 UG4 S, DTSI 4S","YAMAHA FZ16","BAJAJ PLATINA ES UG-DTSI","BAJAJ CT 100","BAJAJ DISCOVER 125 ES DISC","BAJAJ PLATINA","BAJAJ PLATINA ES DRUM-BLACK AW","HERO HUNK DOUBLE DISC","HONDA DIO APDR 3","HONDA DIO-APDR-3","BAJAJ DISCOVER 125 DISC","YAMAHA #NAME?","BAJAJ CT 100 UG-100CC 4S","HERO HUNK","YAMAHA RAY-Z","BAJAJ DISCOVER 125 M DISC","BAJAJ DISCOVER 125 DISC-DTSI","BAJAJ PULSAR 150 UG4.5 DTSI","BAJAJ DISCOVER-125","T V S SCOOTY PEP+","T V S APACHE","BAJAJ DISCOVER 125 ST, DTSI 4S","HONDA DIO SCV-110 CC","HONDA DIO HET","HERO MAESTRO EDGE","BAJAJ PULSAR 180 UG4","YAMAHA FAZER","HONDA TWISTER","HONDA CD 110 DREAM","HERO I SMART","T V S SCOOTY PEP","YAMAHA RAY","HERO HONDA PLEASURE","HERO HF-DAWN","HERO DAWN","HERO DASH LX","HONDA DIO SCOOTER","HONDA DIO SCV","BAJAJ DISCOVER DTSSI100CC","BAJAJ PULSAR 200","HERO PLEASURE LX","BAJAJ PULSAR 180 UG4-DTSI 4S","HERO GLAMOUR","BAJAJ DISCOVER","HERO HONDA","BAJAJ PULSAR 200 NS-DTSI","HONDA DIO - 3","T V S APACHE 180","HERO DASH","YAMAHA ALPHA","HONDA DIO SCV110","YAMAHA FZ-S V2","HERO GLAMOUR DISC SELF CAST","BAJAJ PULSAR 160 NS","T V S WEGO SBS","BAJAJ V 15-DTSI","T V S ZEST","YAMAHA FACINO","YAMAHA FZS","BAJAJ DISCOVER 125M","HONDA CBF TWISTER","YAMAHA SALUTO","BAJAJ PLATINA KS DRUM-BLACK AW","BAJAJ DISCOVER 100 M","BAJAJ PULSAR 150 NS","BAJAJ PULSAR 150 NS DTSI","BAJAJ V-15","T V S APACHE 160","BAJAJ PULSAR 135","HONDA HORNET 160","T V S JUPITER","HERO DUET LX","T V S METRO ES","T V S APACHE 200","T V S APACHE 150","HERO HONDA HUNK","HERO XTREME","T V S APA-150","YAMAHA RAY ZR DISK","YAMAHA","BAJAJ PULSAR 150 AS","TVS WEGO","YAMAHA RAY ZR DRUM","HERO HONDA DIO","T V S SCOOTY ZEST","T V S STREAK","HONDA PLEASURE","YAMAHA FAZAR","T V S APA-180","BAJAJ DISCOVER 125 DRUM DTSI 4S","BAJAJ DISCOVER 125CC","BAJAJ DISCOVER 150 F-DISC","HERO XTREME SPORTS","HONDA DIO SUV 110","BAJAJ PULSAR 150 AS-DTSI","TVS METRO PLUS","T V S ZEST 110") &  !is.na(lb_data$valuation_org),]
+# mb['type'] = "motorbike"
+# 
+# 
+# tk <- lb_data[lb_data$make_model %in% c("TATA ACE","TATA ACE EX","ISUZU ELF","TATA ACE EX","MAHINDRA MAXXIMO","TATA ACE EX2 DIESEL TRUCK WITH DSLB","MITSUBISHI CANTER","MAHINDRA BOLERO MAXI TRUCK","MAHENDRA MAXXIMO","TATA SUPER ACE","TATA ACE EX TRUCK WITH DSLB","MAHINDRA MAXXIMO PLUS 2WD","TATA ACE EX 2","MAHENDRA MAXXI TRUCK","TATA ACE HT","TATA SUPERACE TRUCK-DSLB-NON A/C","MAHINDRA BMT PLUS MDI PS 2WD","TATA 207 DI","MAHINDRA MAXXIMO PLUS VX 2WD","MAHINDRA BMT PLUS MDI 2WD","TATA XENON LIGHT DIESEL TRUCK","TATA ACE HT2 DIESEL TRUCK WITH DSLB","TATA ACE EX2","MAHINDRA BOLERO MAXI TRUCK 2WD","MAHINDRA MAXXIMO 2WD","MAHINDRA BOLERO MAXXI TRUCK","MAHINDRA BMT PLUS MDI PS","TATA 207 RX PICK UP SINGLE CAB","TATA ACE ZIP","TATA 207 DI/28 SINGLE CAB","TATA ACE XPRESS CDI DIESEL TRUCK","TATA ACE EX TRUCK WITH DSLE","MAHINDRA BOLERO LOAD CARRIER","TATA ACE ZIP WITH DSLB","TATA ACE-EX","MAHINDRA BMT PLUS-VX","MAHINDRA MAXXIMO TRUCK","TATA ACE HT WITH DSLB","TATA ACE EX 2","TATA ACE ZIP","MAHINDRA BOLERO MAXXI TRUCK PLUS VX PS","TATA ACE HT 2","MAHENDRA MAXI TRUCK","MAHINDRA BMT PLUS VX PS","DIMO TATA ACE EX") &  !is.na(lb_data$valuation_org),]
+# tk['type'] = "minitruck"
 
+van <- lb_data[grepl("HIACE", lb_data[["make_model"]]) | grepl("CARAVAN", lb_data[["make_model"]]), ]
+van['type'] = "van"
 
-tk <- lb_data[lb_data$make_model %in% c("TATA ACE","TATA ACE EX","ISUZU ELF","TATA ACE EX","MAHINDRA MAXXIMO","TATA ACE EX2 DIESEL TRUCK WITH DSLB","MITSUBISHI CANTER","MAHINDRA BOLERO MAXI TRUCK","MAHENDRA MAXXIMO","TATA SUPER ACE","TATA ACE EX TRUCK WITH DSLB","MAHINDRA MAXXIMO PLUS 2WD","TATA ACE EX 2","MAHENDRA MAXXI TRUCK","TATA ACE HT","TATA SUPERACE TRUCK-DSLB-NON A/C","MAHINDRA BMT PLUS MDI PS 2WD","TATA 207 DI","MAHINDRA MAXXIMO PLUS VX 2WD","MAHINDRA BMT PLUS MDI 2WD","TATA XENON LIGHT DIESEL TRUCK","TATA ACE HT2 DIESEL TRUCK WITH DSLB","TATA ACE EX2","MAHINDRA BOLERO MAXI TRUCK 2WD","MAHINDRA MAXXIMO 2WD","MAHINDRA BOLERO MAXXI TRUCK","MAHINDRA BMT PLUS MDI PS","TATA 207 RX PICK UP SINGLE CAB","TATA ACE ZIP","TATA 207 DI/28 SINGLE CAB","TATA ACE XPRESS CDI DIESEL TRUCK","TATA ACE EX TRUCK WITH DSLE","MAHINDRA BOLERO LOAD CARRIER","TATA ACE ZIP WITH DSLB","TATA ACE-EX","MAHINDRA BMT PLUS-VX","MAHINDRA MAXXIMO TRUCK","TATA ACE HT WITH DSLB","TATA ACE EX 2","TATA ACE ZIP","MAHINDRA BOLERO MAXXI TRUCK PLUS VX PS","TATA ACE HT 2","MAHENDRA MAXI TRUCK","MAHINDRA BMT PLUS VX PS","DIMO TATA ACE EX") &  !is.na(lb_data$valuation_org),]
-tk['type'] = "minitruck"
-
-lb_data <- rbind(rbind(tw,mb),tk)
-rm(list=c("tw","mb","tk"))
+lb_data <-rbind(tw,van)
+rm(list=c("tw","van"))
 
 lb_data$loan_org_date <- as.Date(lb_data$loan_org_date)
 lb_data <- lb_data[!is.na(lb_data$loan_org_date),]
@@ -79,12 +82,13 @@ lb_data['loan_amount_calc'] <- lb_data$monthly_rental *(1-(1+(lb_data$interest_r
 lb_data <- lb_data[lb_data$interest_rate>=10,]
 lb_data['ltv'] <- lb_data$loan_amount_calc/lb_data$valuation_org
 lb_data['loan_org_month_no'] <- as.numeric(paste(format(lb_data$loan_org_month,"%Y"),format(lb_data$loan_org_month,"%m"),sep=""))
+lb_data <- lb_data[lb_data$facility_no != "LF1710KIB52650 ",]
 ```
 
 ```{r data_clean_performance}
 
 
-file_names <- c("E:/auto_strategicdefault/Raw Data/lb_performance/2015.csv","E:/auto_strategicdefault/Raw Data/lb_performance/2016.csv")
+file_names <- c("E:/auto_strategicdefault/Raw Data/lb_performance/2017.csv","E:/auto_strategicdefault/Raw Data/lb_performance/2016.csv")
 per_data <- do.call(rbind,lapply(file_names,read.csv,header=FALSE,stringsAsFactors=FALSE))
 names(per_data) <- c("month","facility_no","NPL_status","NRIA","age","status","sold")
 
@@ -93,99 +97,44 @@ per_data <- per_data[per_data$facility_no %in% unique(lb_data$facility_no),]
 lb_data <- lb_data[lb_data$facility_no %in% unique(per_data$facility_no),]
 per_data <- per_data[per_data$NPL_status != "NULL",]
 per_data$month <- substr(per_data$month,1,10)
+per_data <- per_data[2:nrow(per_data),]
 per_data$month <- as.Date(per_data$month)
 per_data['NPL'] <- ifelse(per_data$NPL_status=="N",1,0)
 per_data$NPL_status <- NULL
 per_data['month_no'] <- as.numeric(paste(format(per_data$month,"%Y"),format(per_data$month,"%m"),sep = ""))
+per_data['post'] <- ifelse(per_data$month_no>=201702,1,0)
 
-per_data['post'] <- ifelse(per_data$month_no>=201512,1,0)
-
-save(per_data,file="E:/auto_strategicdefault/Processed/pre_data.rda")
-save(lb_data,file="E:/auto_strategicdefault/Processed/lb_data.rda")
+per_data <- merge(per_data,lb_data,by="facility_no")
 ```
 
-```{r value_gr_tw}
-used_value <- lb_data[lb_data$vehicle_condition=="USED" & lb_data$type=="threewheeler",]
-used_value <- ddply(used_value,.(vehicle_year,loan_org_month),summarise,used_vehicle_value = median(valuation_org))
-temp2 <- lb_data[lb_data$vehicle_condition=="BRAND NEW" & lb_data$type=="threewheeler",]
-temp2 <- ddply(temp2,.(loan_org_month),summarise,new_vehicle_value = median(valuation_org))
-used_value <- merge(used_value,temp2,by="loan_org_month")
-used_value <- used_value[used_value$vehicle_year>=2010,]
-used_value <- used_value[order(used_value$vehicle_year,used_value$loan_org_month),]
-used_value <- used_value[used_value$loan_org_month>"2015-01-01" & used_value$loan_org_month<="2016-12-31",]
-used_value <- used_value[used_value$vehicle_year %in% c(2014:2016),]
-used_value$used_vehicle_value <- ifelse(used_value$vehicle_year != 2014, NA,used_value$used_vehicle_value)
-used_value$vehicle_year <- NULL
-names(used_value) <- c("loan_org_month","tw_used_2014","tw_new")
-used_value <- used_value[!is.na(used_value$tw_used_2014),]
+```{r number_of_loans}
+temp <-lb_data[ lb_data$loan_org_month_no>=201604 & lb_data$loan_org_month_no<=201709 & lb_data$facility_no != "LF1710KIB52650 ",]
+temp$type<- ifelse(temp$type=="van","van",ifelse(temp$vehicle_condition=="USED","usedtw","bnewtw"))
+no_of_loans <- ddply(temp,.(loan_org_month,type),summarise,no_of_loans=length(valuation_org))
 
-used_value <- used_value[used_value$loan_org_month>="2015-06-01" & used_value$loan_org_month<="2016-06-01",]
+scale = mean(no_of_loans[no_of_loans$type!="van",]$no_of_loans)/mean(no_of_loans[no_of_loans$type=="van",]$no_of_loans)
+no_of_loans$no_of_loans <- ifelse(no_of_loans$type=="van",no_of_loans$no_of_loans*scale,no_of_loans$no_of_loans)
 
-used_value_melt <- melt(used_value,id="loan_org_month")
+no_of_loans_gr <-  ggplot(no_of_loans,aes(x=loan_org_month, y=no_of_loans,colour=type)) + geom_line(aes(linetype=type), size=1) +scale_linetype_manual(values = c(1,4,2))+scale_colour_manual(values=c("red","red","black"))+ theme_bw()+ylab("LTV") + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom")+ scale_y_continuous("No of Three Wheelers", sec.axis = sec_axis(~ . /scale, name = "No of Vans"))
+no_of_loans_gr
 
-value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(2,1))+scale_colour_manual(values=c("black","red"))+ theme_bw()+ylab("Value (LKR)") + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") 
-value_gr
-```
-
-```{r value_gr_ace}
-
-temp2 <- lb_data[lb_data$vehicle_condition=="BRAND NEW" & lb_data$make_model=="TATA ACE",]
-temp2 <- ddply(temp2,.(loan_org_month),summarise,ace_value = mean(valuation_org))
-used_value <- merge(used_value,temp2,by="loan_org_month")
-used_value$tw_used_2014 <- NULL
-used_value$ace_value <- ifelse(used_value$ace_value>1140000,sample(c(1011240,1052340,1104000),1),used_value$ace_value)
-
-scale = mean(used_value$tw_new)/mean(used_value$ace_value,na.rm=TRUE)
-
-used_value$ace_value <- used_value$ace_value*scale
-
-used_value_melt <- melt(used_value,id="loan_org_month")
-
-value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("red","black"))+ theme_bw() + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") + scale_y_continuous("Three wheeler Value (LKR)", sec.axis = sec_axis(~ . /scale, name = "Tata ACE Value (LKR)"))
-value_gr
-```
-
-```{r value_gr_dio}
-
-temp2 <- lb_data[lb_data$vehicle_condition=="BRAND NEW" & lb_data$make_model=="HONDA DIO",]
-temp2 <- ddply(temp2,.(loan_org_month),summarise,dio_value = mean(valuation_org))
-used_value <- merge(used_value,temp2,by="loan_org_month")
-used_value$tw_used_2014 <- NULL
-used_value$ace_value <- ifelse(used_value$ace_value>1140000,sample(c(1011240,1052340,1104000),1),used_value$ace_value)
-
-scale = mean(used_value$tw_new)/mean(used_value$dio_value,na.rm=TRUE)
-
-used_value$dio_value <- used_value$dio_value*scale
-used_value$ace_value <- NULL
-
-used_value_melt <- melt(used_value,id="loan_org_month")
-
-value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("red","black"))+ theme_bw() + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") + scale_y_continuous("Three wheeler Value (LKR)", sec.axis = sec_axis(~ . /scale, name = "HONDA DIO Value (LKR)"))
-value_gr
 ```
 
 
-```{r ltv_gr_tw}
-temp <- lb_data[lb_data$vehicle_condition %in% c("BRAND NEW") & (lb_data$loan_org_month>="2015-01-01" & lb_data$loan_org_month<="2015-08-01" | lb_data$loan_org_month>="2015-12-01" & lb_data$loan_org_month<="2017-12-01" | lb_data$loan_org_month=="2015-10-01") & lb_data$type=="threewheeler",]
+```{r value_gr}
 
-temp <- temp[temp$loan_term>=18,]
-# temp <- temp[temp$loan_org_year >= temp$vehicle_year & temp$loan_org_year<= (temp$vehicle_year+1),]
-temp['ltv'] <- temp$loan_amount_calc*100/temp$valuation_org
-temp <- temp[temp$ltv>=50 & temp$ltv<=110,]
+temp <- temp[(temp$type=="van" & temp$vehicle_year>=2000) | (temp$type=="usedtw" & temp$vehicle_year==2014),]
+veh_value <- ddply(temp,.(loan_org_month,type),summarise,value=mean(valuation_org))
 
+scale = mean(veh_value[veh_value$type!="van",]$value)/mean(veh_value[veh_value$type=="van",]$value)
+veh_value$value <- ifelse(veh_value$type=="van",veh_value$value*scale,veh_value$value)
 
-ltv_ts <- ddply(temp,.(loan_org_month),summarise,ltv_median=length(ltv))
-
-ltv_ts <- melt(ltv_ts,id="loan_org_month")
-
-
-ltv_gr <-  ggplot(ltv_ts,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2,2))+scale_colour_manual(values=c("black","gray40","gray40"))+ theme_bw()+ylab("LTV") + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") +geom_hline(aes(yintercept=70), color="gray")
-ltv_gr
+veh_value_gr <-  ggplot(veh_value,aes(x=loan_org_month, y=value,colour=type)) + geom_line(aes(linetype=type), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("red","black"))+ theme_bw()+ylab("LTV") + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom")+ scale_y_continuous("No of Three Wheelers", sec.axis = sec_axis(~ . /scale, name = "No of Vans"))
+veh_value_gr
 ```
 
 ```{r common_trends}
-default_sample <- per_data[per_data$month_no>=201505 & per_data$month_no<=201604,]
-default_sample <- merge(default_sample,lb_data,by="facility_no")
+default_sample <- per_data[per_data$month_no>=201601 & per_data$month_no<=201709,]
 default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
 
 default_sample_sum <- data.table(default_sample)
@@ -193,15 +142,13 @@ default_sample_sum <- default_sample_sum[,list(default=mean(NPL)),by=list(type,m
 default_sample_sum <- as.data.frame(default_sample_sum)
 
 
-common_trend_gr <-  ggplot(default_sample_sum,aes(x=month, y=default,colour=type)) + geom_line(aes(linetype=type), size=1) +scale_linetype_manual(labels = c("Mini-truck", "Motor Bike","Three Wheeler"),values = c(3,2,1))+scale_colour_manual(labels = c("Mini-truck", "Motor Bike","Three Wheeler"),values=c("black","black","red"))+ theme_bw()+ylab("Default") + xlab("Month")+ theme(legend.position="bottom")+ theme(legend.title=element_blank())
+common_trend_gr <-  ggplot(default_sample_sum,aes(x=month, y=default,colour=type)) + geom_line(aes(linetype=type), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("black","red"))+ theme_bw()+ylab("Default") + xlab("Month")+ theme(legend.position="bottom")+ theme(legend.title=element_blank())
 common_trend_gr
 ```
 
 ```{r main_result}
 regs <- list()
-regs[[1]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$type != "motorbike",])
-regs[[2]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$type != "minitruck",])
-regs[[3]] <- felm(NPL~post*treat|facility_no,data=default_sample)
+regs[[1]] <- felm(NPL~post*treat|facility_no,data=default_sample)
 
 stargazer(regs,type = "text")
 ```

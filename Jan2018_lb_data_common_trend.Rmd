@@ -69,22 +69,17 @@ lb_data$make_model <- ifelse(lb_data$make_model %in% c("HONDA DIO","HONDA DIO-AP
 
 lb_data['loan_org_month'] <- as.Date(paste(format(lb_data$loan_org_date,"%Y"),"-",format(lb_data$loan_org_date,"%m"),"-01",sep=""))
 lb_data['loan_org_year'] <- as.numeric(format(lb_data$loan_org_date,"%Y"))
-
+lb_data['ltv'] <- lb_data$loan_amount/lb_data$valuation_org
 lb_data['brand_new'] <- ifelse(lb_data$vehicle_condition=="BRAND NEW",1,0)
 lb_data['male']<- ifelse(lb_data$gender=="M",1,0)
 lb_data['married']<- ifelse(lb_data$married=="M" | lb_data$married=="",1,0)
 lb_data['age_of_borrower'] <- lb_data$loan_org_year - lb_data$birth_year
-
-lb_data['loan_amount_calc'] <- lb_data$monthly_rental *(1-(1+(lb_data$interest_rate/1200))^(-lb_data$loan_term))/(lb_data$interest_rate/1200)
-lb_data <- lb_data[lb_data$interest_rate>=10,]
-lb_data['ltv'] <- lb_data$loan_amount_calc/lb_data$valuation_org
-lb_data['loan_org_month_no'] <- as.numeric(paste(format(lb_data$loan_org_month,"%Y"),format(lb_data$loan_org_month,"%m"),sep=""))
 ```
 
 ```{r data_clean_performance}
 
 
-file_names <- c("E:/auto_strategicdefault/Raw Data/lb_performance/2015.csv","E:/auto_strategicdefault/Raw Data/lb_performance/2016.csv")
+file_names <- c("E:/auto_strategicdefault/Raw Data/lb_performance/2014_1.csv")
 per_data <- do.call(rbind,lapply(file_names,read.csv,header=FALSE,stringsAsFactors=FALSE))
 names(per_data) <- c("month","facility_no","NPL_status","NRIA","age","status","sold")
 
@@ -98,10 +93,9 @@ per_data['NPL'] <- ifelse(per_data$NPL_status=="N",1,0)
 per_data$NPL_status <- NULL
 per_data['month_no'] <- as.numeric(paste(format(per_data$month,"%Y"),format(per_data$month,"%m"),sep = ""))
 
-per_data['post'] <- ifelse(per_data$month_no>=201512,1,0)
+per_data['post'] <- ifelse(per_data$month_no>=201412,1,0)
 
-save(per_data,file="E:/auto_strategicdefault/Processed/pre_data.rda")
-save(lb_data,file="E:/auto_strategicdefault/Processed/lb_data.rda")
+
 ```
 
 ```{r value_gr_tw}
@@ -113,13 +107,13 @@ used_value <- merge(used_value,temp2,by="loan_org_month")
 used_value <- used_value[used_value$vehicle_year>=2010,]
 used_value <- used_value[order(used_value$vehicle_year,used_value$loan_org_month),]
 used_value <- used_value[used_value$loan_org_month>"2015-01-01" & used_value$loan_org_month<="2016-12-31",]
-used_value <- used_value[used_value$vehicle_year %in% c(2014:2016),]
-used_value$used_vehicle_value <- ifelse(used_value$vehicle_year != 2014, NA,used_value$used_vehicle_value)
+used_value <- used_value[used_value$vehicle_year %in% c(2013:2015),]
+used_value$used_vehicle_value <- ifelse(used_value$vehicle_year != 2013, NA,used_value$used_vehicle_value)
 used_value$vehicle_year <- NULL
 names(used_value) <- c("loan_org_month","tw_used_2014","tw_new")
 used_value <- used_value[!is.na(used_value$tw_used_2014),]
 
-used_value <- used_value[used_value$loan_org_month>="2015-06-01" & used_value$loan_org_month<="2016-06-01",]
+# used_value <- used_value[used_value$loan_org_month>="2015-06-01" & used_value$loan_org_month<="2016-06-01",]
 
 used_value_melt <- melt(used_value,id="loan_org_month")
 
@@ -162,25 +156,6 @@ used_value_melt <- melt(used_value,id="loan_org_month")
 
 value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("red","black"))+ theme_bw() + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") + scale_y_continuous("Three wheeler Value (LKR)", sec.axis = sec_axis(~ . /scale, name = "HONDA DIO Value (LKR)"))
 value_gr
-```
-
-
-```{r ltv_gr_tw}
-temp <- lb_data[lb_data$vehicle_condition %in% c("BRAND NEW") & (lb_data$loan_org_month>="2015-01-01" & lb_data$loan_org_month<="2015-08-01" | lb_data$loan_org_month>="2015-12-01" & lb_data$loan_org_month<="2017-12-01" | lb_data$loan_org_month=="2015-10-01") & lb_data$type=="threewheeler",]
-
-temp <- temp[temp$loan_term>=18,]
-# temp <- temp[temp$loan_org_year >= temp$vehicle_year & temp$loan_org_year<= (temp$vehicle_year+1),]
-temp['ltv'] <- temp$loan_amount_calc*100/temp$valuation_org
-temp <- temp[temp$ltv>=50 & temp$ltv<=110,]
-
-
-ltv_ts <- ddply(temp,.(loan_org_month),summarise,ltv_median=length(ltv))
-
-ltv_ts <- melt(ltv_ts,id="loan_org_month")
-
-
-ltv_gr <-  ggplot(ltv_ts,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2,2))+scale_colour_manual(values=c("black","gray40","gray40"))+ theme_bw()+ylab("LTV") + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") +geom_hline(aes(yintercept=70), color="gray")
-ltv_gr
 ```
 
 ```{r common_trends}
