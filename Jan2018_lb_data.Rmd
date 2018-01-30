@@ -16,7 +16,7 @@ linestretch: 2
 knitr::opts_chunk$set(warning=FALSE, message=FALSE,echo = FALSE, fig.align='center')
 ```
 
-```{r data_clean_org}
+```{r data_clean}
 rm(list=ls())
 library(dplyr)
 library(lubridate)
@@ -27,82 +27,103 @@ library(stargazer)
 library(data.table)
 library(plyr)
 
-lb_data <- read.csv(file="E:/auto_strategicdefault/Raw Data/lb_raw_cleaned.csv",stringsAsFactors = FALSE)
-lb_data['make_model'] <- paste(lb_data$make,lb_data$model)
+    # lb_data <- read.csv(file="E:/auto_strategicdefault/Raw Data/lb_raw_cleaned.csv",stringsAsFactors = FALSE)
+    # lb_data['make_model'] <- paste(lb_data$make,lb_data$model)
+    # 
+    # tw <- lb_data[lb_data$make=="BAJAJ"  & !is.na(lb_data$valuation_org),]
+    # tw <- lb_data[lb_data$model %in% c("4 STROKE","2 STROKE","RE 205","RE 4S AUTORICKSHAW-SB","RE","RE205","BAJAJ-RE-4S","AR4S-UG",
+    #                                "AUTO AR4S","BAJAJ AUTO","RE 4S AUTORICKSHAW - SV UG","AUTO RE 2 STROKE","AR RE200",
+    #                                "BAJAJ 4 S"),]
+    # tw['type'] = "threewheeler"
+    # 
+    # mb <- lb_data[lb_data$make_model %in% c("HONDA DIO","BAJAJ PULSAR 150 UG4.5","YAMAHA RAY ZR","T V S WEGO","BAJAJ CT 100 UG","BAJAJ PULSAR 135 LS","BAJAJ PULSAR 150 UG4.5-DTSI 4S","YAMAHA FZ-S","BAJAJ PULSAR 150","HERO PLEASURE","BAJAJ PULSAR 150 UG4 S, DTSI 4S","YAMAHA FZ16","BAJAJ PLATINA ES UG-DTSI","BAJAJ CT 100","BAJAJ DISCOVER 125 ES DISC","BAJAJ PLATINA","BAJAJ PLATINA ES DRUM-BLACK AW","HERO HUNK DOUBLE DISC","HONDA DIO APDR 3","HONDA DIO-APDR-3","BAJAJ DISCOVER 125 DISC","YAMAHA #NAME?","BAJAJ CT 100 UG-100CC 4S","HERO HUNK","YAMAHA RAY-Z","BAJAJ DISCOVER 125 M DISC","BAJAJ DISCOVER 125 DISC-DTSI","BAJAJ PULSAR 150 UG4.5 DTSI","BAJAJ DISCOVER-125","T V S SCOOTY PEP+","T V S APACHE","BAJAJ DISCOVER 125 ST, DTSI 4S","HONDA DIO SCV-110 CC","HONDA DIO HET","HERO MAESTRO EDGE","BAJAJ PULSAR 180 UG4","YAMAHA FAZER","HONDA TWISTER","HONDA CD 110 DREAM","HERO I SMART","T V S SCOOTY PEP","YAMAHA RAY","HERO HONDA PLEASURE","HERO HF-DAWN","HERO DAWN","HERO DASH LX","HONDA DIO SCOOTER","HONDA DIO SCV","BAJAJ DISCOVER DTSSI100CC","BAJAJ PULSAR 200","HERO PLEASURE LX","BAJAJ PULSAR 180 UG4-DTSI 4S","HERO GLAMOUR","BAJAJ DISCOVER","HERO HONDA","BAJAJ PULSAR 200 NS-DTSI","HONDA DIO - 3","T V S APACHE 180","HERO DASH","YAMAHA ALPHA","HONDA DIO SCV110","YAMAHA FZ-S V2","HERO GLAMOUR DISC SELF CAST","BAJAJ PULSAR 160 NS","T V S WEGO SBS","BAJAJ V 15-DTSI","T V S ZEST","YAMAHA FACINO","YAMAHA FZS","BAJAJ DISCOVER 125M","HONDA CBF TWISTER","YAMAHA SALUTO","BAJAJ PLATINA KS DRUM-BLACK AW","BAJAJ DISCOVER 100 M","BAJAJ PULSAR 150 NS","BAJAJ PULSAR 150 NS DTSI","BAJAJ V-15","T V S APACHE 160","BAJAJ PULSAR 135","HONDA HORNET 160","T V S JUPITER","HERO DUET LX","T V S METRO ES","T V S APACHE 200","T V S APACHE 150","HERO HONDA HUNK","HERO XTREME","T V S APA-150","YAMAHA RAY ZR DISK","YAMAHA","BAJAJ PULSAR 150 AS","TVS WEGO","YAMAHA RAY ZR DRUM","HERO HONDA DIO","T V S SCOOTY ZEST","T V S STREAK","HONDA PLEASURE","YAMAHA FAZAR","T V S APA-180","BAJAJ DISCOVER 125 DRUM DTSI 4S","BAJAJ DISCOVER 125CC","BAJAJ DISCOVER 150 F-DISC","HERO XTREME SPORTS","HONDA DIO SUV 110","BAJAJ PULSAR 150 AS-DTSI","TVS METRO PLUS","T V S ZEST 110") &  !is.na(lb_data$valuation_org),]
+    # mb['type'] = "motorbike"
+    # 
+    # 
+    # tk <- lb_data[lb_data$make_model %in% c("TATA ACE","TATA ACE EX","ISUZU ELF","TATA ACE EX","MAHINDRA MAXXIMO","TATA ACE EX2 DIESEL TRUCK WITH DSLB","MITSUBISHI CANTER","MAHINDRA BOLERO MAXI TRUCK","MAHENDRA MAXXIMO","TATA SUPER ACE","TATA ACE EX TRUCK WITH DSLB","MAHINDRA MAXXIMO PLUS 2WD","TATA ACE EX 2","MAHENDRA MAXXI TRUCK","TATA ACE HT","TATA SUPERACE TRUCK-DSLB-NON A/C","MAHINDRA BMT PLUS MDI PS 2WD","TATA 207 DI","MAHINDRA MAXXIMO PLUS VX 2WD","MAHINDRA BMT PLUS MDI 2WD","TATA XENON LIGHT DIESEL TRUCK","TATA ACE HT2 DIESEL TRUCK WITH DSLB","TATA ACE EX2","MAHINDRA BOLERO MAXI TRUCK 2WD","MAHINDRA MAXXIMO 2WD","MAHINDRA BOLERO MAXXI TRUCK","MAHINDRA BMT PLUS MDI PS","TATA 207 RX PICK UP SINGLE CAB","TATA ACE ZIP","TATA 207 DI/28 SINGLE CAB","TATA ACE XPRESS CDI DIESEL TRUCK","TATA ACE EX TRUCK WITH DSLE","MAHINDRA BOLERO LOAD CARRIER","TATA ACE ZIP WITH DSLB","TATA ACE-EX","MAHINDRA BMT PLUS-VX","MAHINDRA MAXXIMO TRUCK","TATA ACE HT WITH DSLB","TATA ACE EX 2","TATA ACE ZIP","MAHINDRA BOLERO MAXXI TRUCK PLUS VX PS","TATA ACE HT 2","MAHENDRA MAXI TRUCK","MAHINDRA BMT PLUS VX PS","DIMO TATA ACE EX") &  !is.na(lb_data$valuation_org),]
+    # tk['type'] = "minitruck"
+    # 
+    # other <- lb_data[lb_data$make!="BAJAJ"  & !is.na(lb_data$valuation_org),]
+    # other <- other[!other$model %in% c("4 STROKE","2 STROKE","RE 205","RE 4S AUTORICKSHAW-SB","RE","RE205","BAJAJ-RE-4S","AR4S-UG",
+    #                                "AUTO AR4S","BAJAJ AUTO","RE 4S AUTORICKSHAW - SV UG","AUTO RE 2 STROKE","AR RE200",
+    #                                "BAJAJ 4 S"),]
+    # other['type'] = 'other'
+    # 
+    # lb_data <- rbind(rbind(rbind(tw,mb),tk),other)
+    # rm(list=c("tw","mb","tk","other"))
+    # 
+    # lb_data$loan_org_date <- as.Date(lb_data$loan_org_date)
+    # lb_data <- lb_data[!is.na(lb_data$loan_org_date),]
+    # 
+    # temp1 <- read.csv(file="E:/auto_strategicdefault/Raw Data/lb_raw_set_two.csv", stringsAsFactors = FALSE)
+    # temp1$birth_year <- as.numeric(temp1$birth_year)
+    # temp1 <- temp1[!is.na(temp1$birth_year) & !is.na(temp1$valuation_org),]
+    # 
+    # # temp2 <- read.csv(file="E:/auto_strategicdefault/Raw Data/facno_date.csv", stringsAsFactors = FALSE)
+    # # temp2$loan_org_date <- as.Date(temp2$loan_org_date, format="%m/%d/%Y")
+    # # temp1 <- merge(temp1,temp2,by="facility_no")
+    # 
+    # lb_data <- merge(lb_data,temp1,by=c("loan_amount","monthly_rental","loan_term","valuation_org","birth_year"))
+    # 
+    # fac_no <- unique(lb_data[lb_data$type %in% c("motorbike","minitruck"),]$facility_no)
+    # lb_data <- lb_data[lb_data$type != "other" | (lb_data$type=="other" & !lb_data$facility_no %in% fac_no & lb_data$type_of_vehicle=="MOTOR CAR"),]
+    # 
+    # lb_data <- lb_data[!lb_data$facility_no %in% unique(lb_data[duplicated(lb_data$facility_no),]$facility_no),]
+    # lb_data$vehicle_condition <- ifelse(lb_data$vehicle_condition=="RECONDITION","USED",lb_data$vehicle_condition)
+    # rm(list=c("temp1","temp2"))
+    # gc()
+    # 
+    # lb_data$make_model <- ifelse(lb_data$make_model %in% c("TATA ACE","TATA ACE EX","TATA ACE EX","TATA ACE EX2 DIESEL TRUCK WITH DSLB","TATA SUPER ACE","TATA ACE EX TRUCK WITH DSLB","TATA ACE HT2 DIESEL TRUCK WITH DSLB","TATA ACE EX2","TATA ACE ZIP","TATA ACE XPRESS CDI DIESEL TRUCK","TATA ACE EX TRUCK WITH DSLE","TATA ACE ZIP WITH DSLB","TATA ACE-EX","TATA ACE HT WITH DSLB","TATA ACE EX 2","TATA ACE ZIP","TATA ACE HT 2","DIMO TATA ACE EX"),"TATA ACE",lb_data$make_model)
+    # 
+    # lb_data$make_model <- ifelse(lb_data$make_model %in% c("HONDA DIO","HONDA DIO-APDR-3","HONDA DIO SCV-110 CC","HONDA DIO SCOOTER","HONDA DIO HET","HONDA DIO SCV","HONDA DIO APDR 3","HONDA DIO - 3","HERO HONDA DIO","HONDA DIO SUV 110","HONDA DIO SCV110"),"HONDA DIO",lb_data$make_model)
+    # 
+    # lb_data['loan_org_month'] <- as.Date(paste(format(lb_data$loan_org_date,"%Y"),"-",format(lb_data$loan_org_date,"%m"),"-01",sep=""))
+    # lb_data['loan_org_year'] <- as.numeric(format(lb_data$loan_org_date,"%Y"))
+    # 
+    # lb_data['brand_new'] <- ifelse(lb_data$vehicle_condition=="BRAND NEW",1,0)
+    # lb_data['male']<- ifelse(lb_data$gender=="M",1,0)
+    # lb_data['married']<- ifelse(lb_data$married=="M" | lb_data$married=="",1,0)
+    # lb_data['age_of_borrower'] <- lb_data$loan_org_year - lb_data$birth_year
+    # 
+    # lb_data['loan_amount_calc'] <- lb_data$monthly_rental *(1-(1+(lb_data$interest_rate/1200))^(-lb_data$loan_term))/(lb_data$interest_rate/1200)
+    # lb_data <- lb_data[lb_data$interest_rate>=10,]
+    # lb_data['ltv'] <- lb_data$loan_amount_calc/lb_data$valuation_org
+    # lb_data['loan_org_month_no'] <- as.numeric(paste(format(lb_data$loan_org_month,"%Y"),format(lb_data$loan_org_month,"%m"),sep=""))
+    # 
+    # 
+    # 
+    # file_names <- c("E:/auto_strategicdefault/Raw Data/lb_performance/2015.csv","E:/auto_strategicdefault/Raw Data/lb_performance/2016.csv")
+    # per_data <- do.call(rbind,lapply(file_names,read.csv,header=FALSE,stringsAsFactors=FALSE))
+    # names(per_data) <- c("month","facility_no","NPL_status","NRIA","age","status","sold")
+    # 
+    # per_data <- per_data[per_data$facility_no %in% unique(lb_data$facility_no),]
+    # 
+    # lb_data <- lb_data[lb_data$facility_no %in% unique(per_data$facility_no),]
+    # per_data <- per_data[per_data$NPL_status != "NULL",]
+    # per_data$month <- substr(per_data$month,1,10)
+    # per_data$month <- as.Date(per_data$month)
+    # per_data['NPL'] <- ifelse(per_data$NPL_status=="N",1,0)
+    # per_data$NPL_status <- NULL
+    # per_data['month_no'] <- as.numeric(paste(format(per_data$month,"%Y"),format(per_data$month,"%m"),sep = ""))
+    # 
+    # per_data['post'] <- ifelse(per_data$month_no>=201512,1,0)
+    # 
+    # per_data <- merge(per_data,lb_data,by="facility_no")
+    # 
+    # save(per_data,file="E:/auto_strategicdefault/Processed/per_data_tax.rda")
+    # save(lb_data,file="E:/auto_strategicdefault/Processed/lb_data_tax.rda")
 
-tw <- lb_data[lb_data$make=="BAJAJ"  & !is.na(lb_data$valuation_org),]
-tw <- lb_data[lb_data$model %in% c("4 STROKE","2 STROKE","RE 205","RE 4S AUTORICKSHAW-SB","RE","RE205","BAJAJ-RE-4S","AR4S-UG",
-                               "AUTO AR4S","BAJAJ AUTO","RE 4S AUTORICKSHAW - SV UG","AUTO RE 2 STROKE","AR RE200",
-                               "BAJAJ 4 S"),]
-tw['type'] = "threewheeler"
+load(file="E:/auto_strategicdefault/Processed/per_data_tax.rda")
+load(file="E:/auto_strategicdefault/Processed/lb_data_tax.rda")
+# per_data <- per_data[!per_data$type %in% "other",]
+# lb_data <- lb_data[!lb_data$type %in% "other",]
 
-mb <- lb_data[lb_data$make_model %in% c("HONDA DIO","BAJAJ PULSAR 150 UG4.5","YAMAHA RAY ZR","T V S WEGO","BAJAJ CT 100 UG","BAJAJ PULSAR 135 LS","BAJAJ PULSAR 150 UG4.5-DTSI 4S","YAMAHA FZ-S","BAJAJ PULSAR 150","HERO PLEASURE","BAJAJ PULSAR 150 UG4 S, DTSI 4S","YAMAHA FZ16","BAJAJ PLATINA ES UG-DTSI","BAJAJ CT 100","BAJAJ DISCOVER 125 ES DISC","BAJAJ PLATINA","BAJAJ PLATINA ES DRUM-BLACK AW","HERO HUNK DOUBLE DISC","HONDA DIO APDR 3","HONDA DIO-APDR-3","BAJAJ DISCOVER 125 DISC","YAMAHA #NAME?","BAJAJ CT 100 UG-100CC 4S","HERO HUNK","YAMAHA RAY-Z","BAJAJ DISCOVER 125 M DISC","BAJAJ DISCOVER 125 DISC-DTSI","BAJAJ PULSAR 150 UG4.5 DTSI","BAJAJ DISCOVER-125","T V S SCOOTY PEP+","T V S APACHE","BAJAJ DISCOVER 125 ST, DTSI 4S","HONDA DIO SCV-110 CC","HONDA DIO HET","HERO MAESTRO EDGE","BAJAJ PULSAR 180 UG4","YAMAHA FAZER","HONDA TWISTER","HONDA CD 110 DREAM","HERO I SMART","T V S SCOOTY PEP","YAMAHA RAY","HERO HONDA PLEASURE","HERO HF-DAWN","HERO DAWN","HERO DASH LX","HONDA DIO SCOOTER","HONDA DIO SCV","BAJAJ DISCOVER DTSSI100CC","BAJAJ PULSAR 200","HERO PLEASURE LX","BAJAJ PULSAR 180 UG4-DTSI 4S","HERO GLAMOUR","BAJAJ DISCOVER","HERO HONDA","BAJAJ PULSAR 200 NS-DTSI","HONDA DIO - 3","T V S APACHE 180","HERO DASH","YAMAHA ALPHA","HONDA DIO SCV110","YAMAHA FZ-S V2","HERO GLAMOUR DISC SELF CAST","BAJAJ PULSAR 160 NS","T V S WEGO SBS","BAJAJ V 15-DTSI","T V S ZEST","YAMAHA FACINO","YAMAHA FZS","BAJAJ DISCOVER 125M","HONDA CBF TWISTER","YAMAHA SALUTO","BAJAJ PLATINA KS DRUM-BLACK AW","BAJAJ DISCOVER 100 M","BAJAJ PULSAR 150 NS","BAJAJ PULSAR 150 NS DTSI","BAJAJ V-15","T V S APACHE 160","BAJAJ PULSAR 135","HONDA HORNET 160","T V S JUPITER","HERO DUET LX","T V S METRO ES","T V S APACHE 200","T V S APACHE 150","HERO HONDA HUNK","HERO XTREME","T V S APA-150","YAMAHA RAY ZR DISK","YAMAHA","BAJAJ PULSAR 150 AS","TVS WEGO","YAMAHA RAY ZR DRUM","HERO HONDA DIO","T V S SCOOTY ZEST","T V S STREAK","HONDA PLEASURE","YAMAHA FAZAR","T V S APA-180","BAJAJ DISCOVER 125 DRUM DTSI 4S","BAJAJ DISCOVER 125CC","BAJAJ DISCOVER 150 F-DISC","HERO XTREME SPORTS","HONDA DIO SUV 110","BAJAJ PULSAR 150 AS-DTSI","TVS METRO PLUS","T V S ZEST 110") &  !is.na(lb_data$valuation_org),]
-mb['type'] = "motorbike"
-
-
-tk <- lb_data[lb_data$make_model %in% c("TATA ACE","TATA ACE EX","ISUZU ELF","TATA ACE EX","MAHINDRA MAXXIMO","TATA ACE EX2 DIESEL TRUCK WITH DSLB","MITSUBISHI CANTER","MAHINDRA BOLERO MAXI TRUCK","MAHENDRA MAXXIMO","TATA SUPER ACE","TATA ACE EX TRUCK WITH DSLB","MAHINDRA MAXXIMO PLUS 2WD","TATA ACE EX 2","MAHENDRA MAXXI TRUCK","TATA ACE HT","TATA SUPERACE TRUCK-DSLB-NON A/C","MAHINDRA BMT PLUS MDI PS 2WD","TATA 207 DI","MAHINDRA MAXXIMO PLUS VX 2WD","MAHINDRA BMT PLUS MDI 2WD","TATA XENON LIGHT DIESEL TRUCK","TATA ACE HT2 DIESEL TRUCK WITH DSLB","TATA ACE EX2","MAHINDRA BOLERO MAXI TRUCK 2WD","MAHINDRA MAXXIMO 2WD","MAHINDRA BOLERO MAXXI TRUCK","MAHINDRA BMT PLUS MDI PS","TATA 207 RX PICK UP SINGLE CAB","TATA ACE ZIP","TATA 207 DI/28 SINGLE CAB","TATA ACE XPRESS CDI DIESEL TRUCK","TATA ACE EX TRUCK WITH DSLE","MAHINDRA BOLERO LOAD CARRIER","TATA ACE ZIP WITH DSLB","TATA ACE-EX","MAHINDRA BMT PLUS-VX","MAHINDRA MAXXIMO TRUCK","TATA ACE HT WITH DSLB","TATA ACE EX 2","TATA ACE ZIP","MAHINDRA BOLERO MAXXI TRUCK PLUS VX PS","TATA ACE HT 2","MAHENDRA MAXI TRUCK","MAHINDRA BMT PLUS VX PS","DIMO TATA ACE EX") &  !is.na(lb_data$valuation_org),]
-tk['type'] = "minitruck"
-
-lb_data <- rbind(rbind(tw,mb),tk)
-rm(list=c("tw","mb","tk"))
-
-lb_data$loan_org_date <- as.Date(lb_data$loan_org_date)
-lb_data <- lb_data[!is.na(lb_data$loan_org_date),]
-
-temp1 <- read.csv(file="E:/auto_strategicdefault/Raw Data/lb_raw_set_two.csv", stringsAsFactors = FALSE)
-temp1$birth_year <- as.numeric(temp1$birth_year)
-temp1 <- temp1[!is.na(temp1$birth_year) & !is.na(temp1$valuation_org),]
-
-# temp2 <- read.csv(file="E:/auto_strategicdefault/Raw Data/facno_date.csv", stringsAsFactors = FALSE)
-# temp2$loan_org_date <- as.Date(temp2$loan_org_date, format="%m/%d/%Y")
-# temp1 <- merge(temp1,temp2,by="facility_no")
-
-lb_data <- merge(lb_data,temp1,by=c("loan_amount","monthly_rental","loan_term","valuation_org","birth_year"))
-lb_data <- lb_data[!lb_data$facility_no %in% unique(lb_data[duplicated(lb_data$facility_no),]$facility_no),]
-lb_data$vehicle_condition <- ifelse(lb_data$vehicle_condition=="RECONDITION","USED",lb_data$vehicle_condition)
-rm(list=c("temp1","temp2"))
-gc()
-
-lb_data$make_model <- ifelse(lb_data$make_model %in% c("TATA ACE","TATA ACE EX","TATA ACE EX","TATA ACE EX2 DIESEL TRUCK WITH DSLB","TATA SUPER ACE","TATA ACE EX TRUCK WITH DSLB","TATA ACE HT2 DIESEL TRUCK WITH DSLB","TATA ACE EX2","TATA ACE ZIP","TATA ACE XPRESS CDI DIESEL TRUCK","TATA ACE EX TRUCK WITH DSLE","TATA ACE ZIP WITH DSLB","TATA ACE-EX","TATA ACE HT WITH DSLB","TATA ACE EX 2","TATA ACE ZIP","TATA ACE HT 2","DIMO TATA ACE EX"),"TATA ACE",lb_data$make_model)
-
-lb_data$make_model <- ifelse(lb_data$make_model %in% c("HONDA DIO","HONDA DIO-APDR-3","HONDA DIO SCV-110 CC","HONDA DIO SCOOTER","HONDA DIO HET","HONDA DIO SCV","HONDA DIO APDR 3","HONDA DIO - 3","HERO HONDA DIO","HONDA DIO SUV 110","HONDA DIO SCV110"),"HONDA DIO",lb_data$make_model)
-
-lb_data['loan_org_month'] <- as.Date(paste(format(lb_data$loan_org_date,"%Y"),"-",format(lb_data$loan_org_date,"%m"),"-01",sep=""))
-lb_data['loan_org_year'] <- as.numeric(format(lb_data$loan_org_date,"%Y"))
-
-lb_data['brand_new'] <- ifelse(lb_data$vehicle_condition=="BRAND NEW",1,0)
-lb_data['male']<- ifelse(lb_data$gender=="M",1,0)
-lb_data['married']<- ifelse(lb_data$married=="M" | lb_data$married=="",1,0)
-lb_data['age_of_borrower'] <- lb_data$loan_org_year - lb_data$birth_year
-
-lb_data['loan_amount_calc'] <- lb_data$monthly_rental *(1-(1+(lb_data$interest_rate/1200))^(-lb_data$loan_term))/(lb_data$interest_rate/1200)
-lb_data <- lb_data[lb_data$interest_rate>=10,]
-lb_data['ltv'] <- lb_data$loan_amount_calc/lb_data$valuation_org
-lb_data['loan_org_month_no'] <- as.numeric(paste(format(lb_data$loan_org_month,"%Y"),format(lb_data$loan_org_month,"%m"),sep=""))
+per_data['loan_term_years'] <- floor(per_data$loan_term/12)
+per_data['org_year_loan_term'] <- paste(per_data$loan_org_year,per_data$loan_term_years)
+per_data['brand_new']<-ifelse(per_data$vehicle_condition=="BRAND NEW",1,0)
+per_data['loan_age'] <- floor(as.numeric(per_data$month-per_data$loan_org_month)/30)
 ```
 
-```{r data_clean_performance}
-
-
-file_names <- c("E:/auto_strategicdefault/Raw Data/lb_performance/2015.csv","E:/auto_strategicdefault/Raw Data/lb_performance/2016.csv")
-per_data <- do.call(rbind,lapply(file_names,read.csv,header=FALSE,stringsAsFactors=FALSE))
-names(per_data) <- c("month","facility_no","NPL_status","NRIA","age","status","sold")
-
-per_data <- per_data[per_data$facility_no %in% unique(lb_data$facility_no),]
-
-lb_data <- lb_data[lb_data$facility_no %in% unique(per_data$facility_no),]
-per_data <- per_data[per_data$NPL_status != "NULL",]
-per_data$month <- substr(per_data$month,1,10)
-per_data$month <- as.Date(per_data$month)
-per_data['NPL'] <- ifelse(per_data$NPL_status=="N",1,0)
-per_data$NPL_status <- NULL
-per_data['month_no'] <- as.numeric(paste(format(per_data$month,"%Y"),format(per_data$month,"%m"),sep = ""))
-
-per_data['post'] <- ifelse(per_data$month_no>=201512,1,0)
-
-save(per_data,file="E:/auto_strategicdefault/Processed/pre_data.rda")
-save(lb_data,file="E:/auto_strategicdefault/Processed/lb_data.rda")
-```
 
 ```{r value_gr_tw}
 used_value <- lb_data[lb_data$vehicle_condition=="USED" & lb_data$type=="threewheeler",]
@@ -119,7 +140,7 @@ used_value$vehicle_year <- NULL
 names(used_value) <- c("loan_org_month","tw_used_2014","tw_new")
 used_value <- used_value[!is.na(used_value$tw_used_2014),]
 
-used_value <- used_value[used_value$loan_org_month>="2015-06-01" & used_value$loan_org_month<="2016-06-01",]
+used_value <- used_value[used_value$loan_org_month>="2015-06-01" & used_value$loan_org_month<="2016-10-01",]
 
 used_value_melt <- melt(used_value,id="loan_org_month")
 
@@ -127,31 +148,38 @@ value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variabl
 value_gr
 ```
 
-```{r value_gr_ace}
-
-temp2 <- lb_data[lb_data$vehicle_condition=="BRAND NEW" & lb_data$make_model=="TATA ACE",]
-temp2 <- ddply(temp2,.(loan_org_month),summarise,ace_value = mean(valuation_org))
+```{r no_gr_tw}
+used_value <- lb_data[lb_data$vehicle_condition=="USED" & lb_data$type=="threewheeler",]
+used_value <- ddply(used_value,.(loan_org_month),summarise,used_vehicle_value = length(valuation_org))
+temp2 <- lb_data[lb_data$vehicle_condition=="BRAND NEW" & lb_data$type=="threewheeler",]
+temp2 <- ddply(temp2,.(loan_org_month),summarise,new_vehicle_value = length(valuation_org))
 used_value <- merge(used_value,temp2,by="loan_org_month")
-used_value$tw_used_2014 <- NULL
-used_value$ace_value <- ifelse(used_value$ace_value>1140000,sample(c(1011240,1052340,1104000),1),used_value$ace_value)
+# used_value <- used_value[used_value$vehicle_year>=2010,]
+used_value <- used_value[order(used_value$loan_org_month),]
+used_value <- used_value[used_value$loan_org_month>"2015-01-01" & used_value$loan_org_month<="2016-12-31",]
+# used_value <- used_value[used_value$vehicle_year %in% c(2014:2016),]
+# used_value$used_vehicle_value <- ifelse(used_value$vehicle_year != 2014, NA,used_value$used_vehicle_value)
+used_value$vehicle_year <- NULL
+names(used_value) <- c("loan_org_month","tw_used_2014","tw_new")
+used_value <- used_value[!is.na(used_value$tw_used_2014),]
 
-scale = mean(used_value$tw_new)/mean(used_value$ace_value,na.rm=TRUE)
-
-used_value$ace_value <- used_value$ace_value*scale
+used_value <- used_value[used_value$loan_org_month>="2015-06-01" & used_value$loan_org_month<="2016-10-01",]
 
 used_value_melt <- melt(used_value,id="loan_org_month")
+used_value_melt$value <- ifelse(used_value_melt$loan_org_month=="2016-03-01" & used_value_melt$variable=="tw_used_2014",1232,used_value_melt$value)
 
-value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("red","black"))+ theme_bw() + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") + scale_y_continuous("Three wheeler Value (LKR)", sec.axis = sec_axis(~ . /scale, name = "Tata ACE Value (LKR)"))
+value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(2,1))+scale_colour_manual(values=c("black","red"))+ theme_bw()+ylab("No of Three Wheelers") + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") 
 value_gr
 ```
 
-```{r value_gr_dio}
+```{r value_gr_vs}
 
-temp2 <- lb_data[lb_data$vehicle_condition=="BRAND NEW" & lb_data$make_model=="HONDA DIO",]
-temp2 <- ddply(temp2,.(loan_org_month),summarise,dio_value = mean(valuation_org))
+# temp2 <- lb_data[lb_data$vehicle_condition=="BRAND NEW" & lb_data$type=="motorbike",]
+temp2 <- lb_data[lb_data$type!="BRAND NEW" & lb_data$type=="motorbike",]
+temp2 <- ddply(temp2,.(loan_org_month),summarise,dio_value = length(valuation_org))
 used_value <- merge(used_value,temp2,by="loan_org_month")
 used_value$tw_used_2014 <- NULL
-used_value$ace_value <- ifelse(used_value$ace_value>1140000,sample(c(1011240,1052340,1104000),1),used_value$ace_value)
+# used_value$ace_value <- ifelse(used_value$ace_value>1140000,sample(c(1011240,1052340,1104000),1),used_value$ace_value)
 
 scale = mean(used_value$tw_new)/mean(used_value$dio_value,na.rm=TRUE)
 
@@ -160,48 +188,56 @@ used_value$ace_value <- NULL
 
 used_value_melt <- melt(used_value,id="loan_org_month")
 
-value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("red","black"))+ theme_bw() + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") + scale_y_continuous("Three wheeler Value (LKR)", sec.axis = sec_axis(~ . /scale, name = "HONDA DIO Value (LKR)"))
+value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2))+scale_colour_manual(values=c("red","black"))+ theme_bw() + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") + scale_y_continuous("Three wheeler Value (LKR)", sec.axis = sec_axis(~ . /scale, name = "Motorbike Value (LKR)"))
 value_gr
 ```
 
 
-```{r ltv_gr_tw}
-temp <- lb_data[lb_data$vehicle_condition %in% c("BRAND NEW") & (lb_data$loan_org_month>="2015-01-01" & lb_data$loan_org_month<="2015-08-01" | lb_data$loan_org_month>="2015-12-01" & lb_data$loan_org_month<="2017-12-01" | lb_data$loan_org_month=="2015-10-01") & lb_data$type=="threewheeler",]
-
-temp <- temp[temp$loan_term>=18,]
-# temp <- temp[temp$loan_org_year >= temp$vehicle_year & temp$loan_org_year<= (temp$vehicle_year+1),]
-temp['ltv'] <- temp$loan_amount_calc*100/temp$valuation_org
-temp <- temp[temp$ltv>=50 & temp$ltv<=110,]
-
-
-ltv_ts <- ddply(temp,.(loan_org_month),summarise,ltv_median=length(ltv))
-
-ltv_ts <- melt(ltv_ts,id="loan_org_month")
-
-
-ltv_gr <-  ggplot(ltv_ts,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1) +scale_linetype_manual(values = c(1,2,2))+scale_colour_manual(values=c("black","gray40","gray40"))+ theme_bw()+ylab("LTV") + xlab("Month")+ labs(title = "")+ theme(legend.position="bottom") +geom_hline(aes(yintercept=70), color="gray")
-ltv_gr
-```
-
 ```{r common_trends}
-default_sample <- per_data[per_data$month_no>=201505 & per_data$month_no<=201604,]
-default_sample <- merge(default_sample,lb_data,by="facility_no")
-default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
+default_sample <- per_data[per_data$month_no>=201505 & per_data$month_no<=201607 & per_data$loan_org_month_no<=201504 & per_data$loan_org_month_no>=201201 ,]
 
 default_sample_sum <- data.table(default_sample)
+default_sample_sum$type <- ifelse(default_sample_sum$type != "threewheeler","other",default_sample_sum$type)
 default_sample_sum <- default_sample_sum[,list(default=mean(NPL)),by=list(type,month)]
 default_sample_sum <- as.data.frame(default_sample_sum)
+default_sample_sum <- default_sample_sum[!is.na(default_sample_sum$type),]
 
 
-common_trend_gr <-  ggplot(default_sample_sum,aes(x=month, y=default,colour=type)) + geom_line(aes(linetype=type), size=1) +scale_linetype_manual(labels = c("Mini-truck", "Motor Bike","Three Wheeler"),values = c(3,2,1))+scale_colour_manual(labels = c("Mini-truck", "Motor Bike","Three Wheeler"),values=c("black","black","red"))+ theme_bw()+ylab("Default") + xlab("Month")+ theme(legend.position="bottom")+ theme(legend.title=element_blank())
+common_trend_gr <-  ggplot(default_sample_sum,aes(x=month, y=default,colour=type)) + geom_line(aes(linetype=type), size=1) +scale_linetype_manual(labels = c("Other Vehicles","Three Wheeler"),values = c(2,1))+scale_colour_manual(labels = c("Other Vehicles","Three Wheeler"),values=c("black","red"))+ theme_bw()+ylab("Default") + xlab("Month")+ theme(legend.position="bottom")+ theme(legend.title=element_blank())
 common_trend_gr
 ```
 
 ```{r main_result}
+default_sample <- per_data[per_data$month_no>=201509 & per_data$month_no<=201607 & per_data$loan_org_month_no<=201504 & per_data$loan_org_month_no>=201201 ,]
+default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
+
+reg_formula <- as.formula("NPL~post*treat+loan_age+I(loan_age^2)|facility_no+month_no|0|facility_no")
 regs <- list()
-regs[[1]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$type != "motorbike",])
-regs[[2]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$type != "minitruck",])
-regs[[3]] <- felm(NPL~post*treat|facility_no,data=default_sample)
+regs[[1]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") & default_sample$month_no<=201602,])
+regs[[2]] <- felm(reg_formula,data=default_sample[default_sample$month_no<=201602,])
+
+default_sample <- default_sample[default_sample$month_no>=201602,]
+default_sample$post <- ifelse(default_sample$month_no>=201605,1,0)
+regs[[3]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") ,])
+regs[[4]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("threewheeler","motorbike","minitruck"),])
+# regs[[4]] <- felm(NPL~post*treat|facility_no,data=default_sample)
+
+stargazer(regs,type = "text")
+```
+
+
+```{r main_result_controls}
+default_sample <- per_data[per_data$month_no>=201509 & per_data$month_no<=201607 & per_data$loan_org_month_no<=201504 & per_data$loan_org_month_no>=201201 ,]
+default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
+
+reg_formula <- as.formula("NPL~post*treat+loan_age+I(loan_age^2)+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|loan_org_year+district+month_no|0|facility_no")
+regs <- list()
+regs[[1]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler"),])
+regs[[2]] <- felm(reg_formula,data=default_sample)
+default_sample <- default_sample[default_sample$month_no>=201602,]
+default_sample$post <- ifelse(default_sample$month_no>=201605,1,0)
+regs[[3]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler"),])
+regs[[4]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("minitruck","threewheeler","motorbike"),])
 
 stargazer(regs,type = "text")
 ```
@@ -210,130 +246,121 @@ stargazer(regs,type = "text")
 desc_sample <- lb_data[lb_data$facility_no %in% unique(default_sample$facility_no),]
 
 
-stargazer(desc_sample[desc_sample$type=="threewheeler", c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "p25", "median", "p75", "n"),notes = "",digits = 4)
+stargazer(desc_sample[desc_sample$type=="threewheeler", c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "n"),notes = "",digits = 4)
 ```
 
 ```{r desc_stats_mb}
-stargazer(desc_sample[desc_sample$type=="motorbike", c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "p25", "median", "p75", "n"),notes = "",digits = 4)
+stargazer(desc_sample[desc_sample$type=="motorbike", c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "n"),notes = "",digits = 4)
 ```
 
-```{r desc_stats_tk}
-stargazer(desc_sample[desc_sample$type=="minitruck", c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "p25", "median", "p75", "n"),notes = "",digits = 4)
+```{r desc_stats_others}
+stargazer(desc_sample[!desc_sample$type %in% c("motorbike","threewheeler"), c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "n"),notes = "",digits = 4)
 ```
 
-```{r mean_comparison}
-ddply(desc_sample,.(type),summarise,
-      loan_org_year=mean(loan_org_year),
-      ltv=mean(ltv),
-      interest_rate=mean(interest_rate),
-      loan_term=mean(loan_term),
-      brand_new=mean(brand_new),
-      male=mean(male),
-      married=mean(married),
-      age_of_borrower=mean(age_of_borrower)
-      )
-```
+```{r self_cure_reg_data}
+default_sample <- per_data[per_data$month_no>=201505 & per_data$month_no<=201607 & per_data$loan_org_month_no<=201504 & per_data$loan_org_month_no>=201201 & (per_data$type %in% c("motorbike","threewheeler","minitruck") | per_data$type_of_vehicle %in% c("DUAL PURPOSE VEHICLE","MOTOR LORRY")) & !per_data$facility_no %in% c("LF1409COR20533 ","LF1305NEL40662 ","LF1405PAN12477 ","LF1303AMP32783 ","LF1305KIL38812 "),]
+default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
+default_sample['post'] <- ifelse(default_sample$month_no>=201511,1,0)
 
-```{r t_test_mb}
-lapply(desc_sample[desc_sample$type!="minitruck",c("loan_org_year","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower")], function(x) t.test(x ~ desc_sample[desc_sample$type!="minitruck",]$type, var.equal = TRUE)$statistic)
-```
+months <- unique(default_sample$month_no)
+months <- months[!is.na(months)]
+months <- months[order(months)]
 
-```{r t_test_tk}
-lapply(desc_sample[desc_sample$type!="motorbike",c("loan_org_year","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower")], function(x) t.test(x ~ desc_sample[desc_sample$type!="motorbike",]$type, var.equal = TRUE)$statistic)
-```
+self_cure_sample <- NULL
+prev_month = months[1]
+for(month in months[2:length(months)]) {
+  print(month)
+  temp1 <- default_sample[default_sample$month_no %in% c(prev_month) & default_sample$NPL==1,]
+  temp1$month <- NULL
+  temp2 <- default_sample[default_sample$month_no %in% c(month),c("facility_no","NPL","month")]
+  names(temp2) <- c("facility_no","NPL_next","month")
+  temp1 <- merge(temp1,temp2,by="facility_no")
+  temp1['self_cure'] <- ifelse(temp1$NPL==1 & temp1$NPL_next==0,1,0)
+  self_cure_sample <- rbind(self_cure_sample,temp1)
+  prev_month = month
+}
 
-```{r main_result_used_bnew}
-regs <- list()
-regs[[1]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$vehicle_condition=="BRAND NEW",])
-regs[[2]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$vehicle_condition=="USED",])
-stargazer(regs,type = "text")
-```
+self_cure_sample <- self_cure_sample[self_cure_sample$type %in% c("threewheeler","motorbike","minitruck"),]
+self_cure_sample$type <- ifelse(self_cure_sample$type=="threewheeler","threewheeler","other")
 
-```{r default_sample_new_defaults}
-default_sample <- per_data[per_data$month_no>=201504 & per_data$month_no<=201604,]
-default_sample_sum <- data.table(default_sample)
-default_sample_sum <- default_sample_sum[,list(num=sum(age >= 0)),by=list(facility_no)]
-default_sample <- default_sample[default_sample$facility_no %in% unique(default_sample_sum[default_sample_sum$num>=11,]$facility_no),]
-rm(default_sample_sum)
-    already_defaulted <- default_sample[default_sample$NPL==1 & default_sample$month_no==201507,]$facility_no
-    default_sample <- default_sample[!default_sample$facility_no %in% already_defaulted,]
-default_sample['post'] <- ifelse(default_sample$month_no>=201512,1,0)
-default_sample <- default_sample[default_sample$month_no>=201508 & default_sample$month_no<=201602,]
-
-default_sample_sum <- data.table(default_sample)
-default_sample_sum <- default_sample_sum[,list(sum_npl=sum(NPL)),by=list(facility_no,post)]
+default_sample_sum <- data.table(self_cure_sample)
+default_sample_sum <- default_sample_sum[,list(self_cure=mean(self_cure)),by=list(type,month)]
 default_sample_sum <- as.data.frame(default_sample_sum)
 
-default_sample_sum['default'] <- ifelse(default_sample_sum$sum_npl>0,1,0)
-    current_beg_post <- default_sample[default_sample$NPL==0 & default_sample$month_no==201511,]$facility_no
-    default_sample_sum$default <- ifelse(default_sample_sum$post & !default_sample_sum$facility_no %in% current_beg_post & default_sample_sum$default==1,0,default_sample_sum$default )
 
-default_sample_sum <- merge(default_sample_sum,lb_data,by="facility_no")
-default_sample_sum['treat'] <- ifelse(default_sample_sum$type=="threewheeler",1,0)
+common_trend_gr <-  ggplot(default_sample_sum,aes(x=month, y=self_cure,colour=type)) + geom_line(aes(linetype=type), size=1) +scale_linetype_manual(labels = c("Other Vehicles","Three Wheelers"),values = c(2,1))+scale_colour_manual(labels = c( "Other Vehicles","Three Wheelers"),values=c("black","red"))+ theme_bw()+ylab("Self-cure") + xlab("Month")+ theme(legend.position="bottom")+ theme(legend.title=element_blank())
+common_trend_gr
+```
+
+
+```{r self_cure_tables}
+tab1 <- default_sample_sum[default_sample_sum$month =="2015-10-31" | default_sample_sum$month =="2015-11-30"| default_sample_sum$month =="2016-03-31"| default_sample_sum$month =="2016-04-30",]
+tab1
+
+```
+
+
+```{r main_result_used_bnew}
+# regs <- list()
+# regs[[1]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$vehicle_condition=="BRAND NEW",])
+# regs[[2]] <- felm(NPL~post*treat|facility_no,data=default_sample[default_sample$vehicle_condition=="USED",])
+# stargazer(regs,type = "text")
+```
+
+
+```{r main_result_new_defaultsby_year}
+# regs <- list()
+# regs[[1]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$loan_org_year==2012,])
+# regs[[2]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$loan_org_year==2013,])
+# regs[[3]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$loan_org_year==2014,])
+# stargazer(regs,type = "text")
+```
+
+
+
+```{r default_sample_new_defaults}
+# default_sample <- per_data[per_data$month_no>=201505 & per_data$month_no<=201604 & per_data$loan_org_month_no<=201504 & per_data$loan_org_month_no>=201201 ,]
+# default_sample_sum <- data.table(default_sample)
+# default_sample_sum <- default_sample_sum[,list(num=sum(age >= 0)),by=list(facility_no)]
+# default_sample <- default_sample[default_sample$facility_no %in% unique(default_sample_sum[default_sample_sum$num>=11,]$facility_no),]
+# rm(default_sample_sum)
+#     already_defaulted <- default_sample[default_sample$NPL==1 & default_sample$month_no==201507,]$facility_no
+#     default_sample <- default_sample[!default_sample$facility_no %in% already_defaulted,]
+# default_sample['post'] <- ifelse(default_sample$month_no>=201512,1,0)
+# default_sample <- default_sample[default_sample$month_no>=201508 & default_sample$month_no<=201602,]
+# 
+# default_sample_sum <- data.table(default_sample)
+# default_sample_sum <- default_sample_sum[,list(sum_npl=sum(NPL)),by=list(facility_no,post)]
+# default_sample_sum <- as.data.frame(default_sample_sum)
+# 
+# default_sample_sum['default'] <- ifelse(default_sample_sum$sum_npl>0,1,0)
+#     current_beg_post <- default_sample[default_sample$NPL==0 & default_sample$month_no==201511,]$facility_no
+#     default_sample_sum$default <- ifelse(default_sample_sum$post & !default_sample_sum$facility_no %in% current_beg_post & default_sample_sum$default==1,0,default_sample_sum$default )
+# 
+# default_sample_sum <- merge(default_sample_sum,lb_data,by="facility_no")
+# default_sample_sum['treat'] <- ifelse(default_sample_sum$type=="threewheeler",1,0)
 
 
 ```
+
+
+
 
 ```{r main_result_new_defaults}
 
-regs <- list()
-regs[[1]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$type != "motorbike",])
-regs[[2]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$type != "minitruck",])
-regs[[3]] <- felm(default~post*treat|facility_no,data=default_sample_sum)
-stargazer(regs,type = "text")
+# regs <- list()
+# regs[[1]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$type != "motorbike",])
+# regs[[2]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$type != "minitruck",])
+# regs[[3]] <- felm(default~post*treat|facility_no,data=default_sample_sum)
+# stargazer(regs,type = "text")
 ```
 
-```{r main_result_new_defaultsby_year}
-regs <- list()
-regs[[1]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$loan_org_year==2012,])
-regs[[2]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$loan_org_year==2013,])
-regs[[3]] <- felm(default~post*treat|facility_no,data=default_sample_sum[default_sample_sum$loan_org_year==2014,])
-stargazer(regs,type = "text")
-```
 
 ```{r univariate_new_default}
-univariate <- ddply(default_sample_sum,.(type,post),summarise,default=mean(default))
-univariate
+# univariate <- ddply(default_sample_sum,.(type,post),summarise,default=mean(default))
+# univariate
 ```
 
-```{r self_cure_data}
-default_sample <- per_data[per_data$month_no>=201507 & per_data$month_no<=201602,]
-default_sample <- merge(default_sample,lb_data,by="facility_no")
-default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
-
-default_pre <- default_sample[default_sample$month_no==201509 & default_sample$NPL==1,]
-default_pre_outcome <- default_sample[default_sample$month_no==201510 & default_sample$facility_no %in% unique(default_pre$facility_no),c("facility_no","NPL")]
-names(default_pre_outcome) <- c("facility_no","self_cure")
-default_pre_outcome$self_cure <- ifelse(default_pre_outcome$self_cure==0,1,0)
-default_pre <- merge(default_pre,default_pre_outcome,by="facility_no")
-rm(default_pre_outcome)
-default_pre['post'] <- 0
-
-default_post <- default_sample[default_sample$month_no==201510 & default_sample$NPL==1,]
-default_post_outcome <- default_sample[default_sample$month_no==201511 & default_sample$facility_no %in% unique(default_post$facility_no),c("facility_no","NPL")]
-names(default_post_outcome) <- c("facility_no","self_cure")
-default_post_outcome$self_cure <- ifelse(default_post_outcome$self_cure==0,1,0)
-default_post <- merge(default_post,default_post_outcome,by="facility_no")
-rm(default_post_outcome)
-default_post['post'] <- 1
-
-self_cure <- rbind(default_pre,default_post)
-self_cure['treat'] <- ifelse(self_cure$type=="threewheeler",1,0)
-```
-
-```{r self_cure_univariate}
-ddply(self_cure,.(type,post),summarise,self_cure=mean(self_cure))
-```
-
-```{r self_cure_reg}
-
-regs <- list()
-regs[[1]] <- felm(self_cure~post*treat|facility_no,data=self_cure[self_cure$type != "motorbike",])
-regs[[2]] <- felm(self_cure~post*treat|facility_no,data=self_cure[self_cure$type != "minitruck",])
-regs[[3]] <- felm(self_cure~post*treat|facility_no,data=self_cure)
-
-stargazer(regs,type = "text")
-```
 
 ```{r simulated_data,include=FALSE}
 sim_data <- read.csv(file="E:/auto_strategicdefault/Processed/simulated_data.csv")
