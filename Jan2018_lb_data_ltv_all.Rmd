@@ -214,8 +214,9 @@ common_trend_gr
 
 
 ```{r}
-default_sample <- per_data[per_data$month_no>=201610 & per_data$month_no<=201705 & per_data$loan_org_month_no<=201606 & per_data$loan_org_month_no>=201406 & per_data$loan_age>2 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2017-06-01",]
-default_sample['post'] <- ifelse(default_sample$month_no>=201702,1,0)
+default_sample <- per_data[per_data$month_no>=201609 & per_data$month_no<=201705 & per_data$loan_org_month_no<=201601 & per_data$loan_org_month_no>=201406 & per_data$loan_age>2 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2017-06-01",]
+# default_sample <- default_sample[!default_sample$month_no %in% c(201611,201612,201701),]
+default_sample['post'] <- as.factor(ifelse(default_sample$month_no<=201611,0,ifelse(default_sample$month_no<201702,1,2)))
 default_sample['month_district'] <- paste(default_sample$month_no,default_sample$district)
 default_sample['org_district'] <- paste(default_sample$loan_org_month_no,default_sample$district)
 default_sample$type <- as.factor(default_sample$type)
@@ -226,8 +227,8 @@ default_sample <- within(default_sample, type <- relevel(type, ref = 3))
 # default_sample$treatment <- ifelse(default_sample$type=="threewheeler" & default_sample$post==1,0.4,default_sample$treatment)
 # default_sample$treatment <- ifelse(default_sample$type=="trucks" & default_sample$post==1,-0.20,default_sample$treatment)
 
-reg_formula <- as.formula("NPL~post*type|facility_no|0|facility_no")
-reg_formula_controls <- as.formula("NPL~post*type+loan_age+I(loan_age^2)+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|type+org_district|0|facility_no")
+reg_formula <- as.formula("NPL~post*type+loan_age+I(loan_age^2)|facility_no+month_district|0|facility_no")
+reg_formula_controls <- as.formula("NPL~post*type+loan_age+I(loan_age^2)+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|type+loan_org_month_no+month_district|0|facility_no")
 regs <- list()
 # regs[[1]] <- felm(reg_formula,data=default_sample)
 regs[[1]] <- felm(reg_formula,data=default_sample)
@@ -241,12 +242,12 @@ regs[[2]] <- felm(reg_formula_controls,data=default_sample)
 # regs[[9]] <- felm(reg_formula,data=default_sample[default_sample$type != "threewheeler",])
 # regs[[10]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "threewheeler",])
 
-stargazer(regs,type = "text",dep.var.labels.include = FALSE,omit.stat = c("f","rsq","ser"))
+stargazer(regs,type = "text",dep.var.labels.include = FALSE,omit.stat = c("f","rsq","ser"),no.space = TRUE)
 
 ```
 
 ```{r}
-default_sample <- per_data[per_data$month_no>=201607 & per_data$month_no<=201611 & per_data$loan_org_month_no<=201606 & per_data$loan_org_month_no>=201406 & per_data$loan_age>2 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2016-08-01",]#
+default_sample <- per_data[per_data$month_no>=201606 & per_data$month_no<=201611 & per_data$loan_org_month_no<=201601 & per_data$loan_org_month_no>=201406 & per_data$loan_age>2 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2016-12-01",]#
 default_sample['post'] <- ifelse(default_sample$month_no>=201609,1,0)
 default_sample['month_district'] <- paste(default_sample$month_no,default_sample$district)
 default_sample['org_district'] <- paste(default_sample$loan_org_month_no,default_sample$district)
@@ -273,6 +274,114 @@ regs[[2]] <- felm(reg_formula_controls,data=default_sample)
 # regs[[9]] <- felm(reg_formula,data=default_sample[default_sample$type != "threewheeler",])
 # regs[[10]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "threewheeler",])
 
+stargazer(regs,type = "text",dep.var.labels.include = FALSE,omit.stat = c("f","rsq","ser"),no.space = TRUE)
+
+```
+
+```{r wealth_valuation}
+default_sample <- per_data[per_data$month_no>=201610 & per_data$month_no<=201705 & per_data$loan_org_month_no<=201606 & per_data$loan_org_month_no>=201406 & per_data$loan_age>2 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2017-06-01",]
+default_sample['post'] <- ifelse(default_sample$month_no>=201702,1,0)
+default_sample['month_district'] <- paste(default_sample$month_no,default_sample$district)
+default_sample['org_district'] <- paste(default_sample$loan_org_month_no,default_sample$district)
+
+
+
+cars <- default_sample[default_sample$type=="cars",]
+cars$type <- ntile(cars$valuation_org,2)
+cars$type <- paste("cars",cars$type)
+
+trucks <- default_sample[default_sample$type=="trucks",]
+trucks$type <- ntile(trucks$valuation_org,2)
+trucks$type <- paste("trucks",trucks$type)
+
+mb <- default_sample[default_sample$type=="motorbike",]
+mb$type <- ntile(mb$valuation_org,2)
+mb$type <- paste("mb",mb$type)
+
+
+others <- default_sample[default_sample$type=="threewheeler",]
+
+default_sample <- rbind(cars,trucks)
+default_sample <- rbind(default_sample,mb)
+default_sample <- rbind(default_sample,others)
+rm(list=c("cars","others","trucks","mb"))
+default_sample$type <- as.factor(default_sample$type)
+default_sample <- within(default_sample, type <- relevel(type, ref =5))
+# default_sample['treatment'] = 0
+# default_sample$treatment <- ifelse(default_sample$type=="cars" & default_sample$post==1,0.3,default_sample$treatment)
+# default_sample$treatment <- ifelse(default_sample$type=="motorbike" & default_sample$post==1,-0.3,default_sample$treatment)
+# default_sample$treatment <- ifelse(default_sample$type=="threewheeler" & default_sample$post==1,0.4,default_sample$treatment)
+# default_sample$treatment <- ifelse(default_sample$type=="trucks" & default_sample$post==1,-0.20,default_sample$treatment)
+
+reg_formula <- as.formula("NPL~post*type|facility_no|0|facility_no")
+reg_formula_controls <- as.formula("NPL~post*type+loan_age+I(loan_age^2)+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|type+org_district|0|facility_no")
+regs <- list()
+# regs[[1]] <- felm(reg_formula,data=default_sample)
+regs[[1]] <- felm(reg_formula,data=default_sample)
+regs[[2]] <- felm(reg_formula_controls,data=default_sample)
+# regs[[3]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "motorbike",])
+# regs[[4]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "threewheeler",])
+# regs[[5]] <- felm(reg_formula,data=default_sample[default_sample$type != "cars",])
+# regs[[6]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "cars",])
+# regs[[7]] <- felm(reg_formula,data=default_sample[default_sample$type != "trucks",])
+# regs[[8]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "trucks",])
+# regs[[9]] <- felm(reg_formula,data=default_sample[default_sample$type != "threewheeler",])
+# regs[[10]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "threewheeler",])
+
+stargazer(regs,type = "text",dep.var.labels.include = FALSE,omit.stat = c("f","rsq","ser"))
+
+```
+
+```{r wealth_rental}
+default_sample <- per_data[per_data$month_no>=201610 & per_data$month_no<=201705 & per_data$loan_org_month_no<=201606 & per_data$loan_org_month_no>=201406 & per_data$loan_age>2 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2017-06-01",]
+default_sample['post'] <- ifelse(default_sample$month_no>=201702,1,0)
+default_sample['month_district'] <- paste(default_sample$month_no,default_sample$district)
+default_sample['org_district'] <- paste(default_sample$loan_org_month_no,default_sample$district)
+
+
+
+cars <- default_sample[default_sample$type=="cars",]
+cars$type <- ntile(cars$monthly_rental,2)
+cars$type <- paste("cars",cars$type)
+
+trucks <- default_sample[default_sample$type=="trucks",]
+trucks$type <- ntile(trucks$monthly_rental,2)
+trucks$type <- paste("trucks",trucks$type)
+
+mb <- default_sample[default_sample$type=="motorbike",]
+mb$type <- ntile(mb$monthly_rental,2)
+mb$type <- paste("mb",mb$type)
+
+
+others <- default_sample[default_sample$type=="threewheeler",]
+
+default_sample <- rbind(cars,trucks)
+default_sample <- rbind(default_sample,mb)
+default_sample <- rbind(default_sample,others)
+rm(list=c("cars","others","trucks","mb"))
+default_sample$type <- as.factor(default_sample$type)
+default_sample <- within(default_sample, type <- relevel(type, ref =5))
+# default_sample['treatment'] = 0
+# default_sample$treatment <- ifelse(default_sample$type=="cars" & default_sample$post==1,0.3,default_sample$treatment)
+# default_sample$treatment <- ifelse(default_sample$type=="motorbike" & default_sample$post==1,-0.3,default_sample$treatment)
+# default_sample$treatment <- ifelse(default_sample$type=="threewheeler" & default_sample$post==1,0.4,default_sample$treatment)
+# default_sample$treatment <- ifelse(default_sample$type=="trucks" & default_sample$post==1,-0.20,default_sample$treatment)
+
+reg_formula <- as.formula("NPL~post*type|facility_no|0|facility_no")
+reg_formula_controls <- as.formula("NPL~post*type+loan_age+I(loan_age^2)+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|type+org_district|0|facility_no")
+regs <- list()
+# regs[[1]] <- felm(reg_formula,data=default_sample)
+regs[[1]] <- felm(reg_formula,data=default_sample)
+regs[[2]] <- felm(reg_formula_controls,data=default_sample)
+# regs[[3]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "motorbike",])
+# regs[[4]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "threewheeler",])
+# regs[[5]] <- felm(reg_formula,data=default_sample[default_sample$type != "cars",])
+# regs[[6]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "cars",])
+# regs[[7]] <- felm(reg_formula,data=default_sample[default_sample$type != "trucks",])
+# regs[[8]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "trucks",])
+# regs[[9]] <- felm(reg_formula,data=default_sample[default_sample$type != "threewheeler",])
+# regs[[10]] <- felm(reg_formula_controls,data=default_sample[default_sample$type != "threewheeler",])
+
 stargazer(regs,type = "text",dep.var.labels.include = FALSE,omit.stat = c("f","rsq","ser"))
 
 ```
@@ -286,5 +395,5 @@ stargazer(desc_sample[desc_sample$type=="threewheeler", c("loan_org_year","loan_
 ```
 
 ```{r desc_stats_carssuvsvans}
-stargazer(desc_sample[desc_sample$type=="treated", c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "n"),notes = "",digits = 4)
+# stargazer(desc_sample[desc_sample$type=="treated", c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "n"),notes = "",digits = 4)
 ```

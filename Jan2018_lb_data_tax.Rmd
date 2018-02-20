@@ -237,7 +237,7 @@ common_trend_gr
 ```
 
 ```{r main_result}
-default_sample <- per_data[per_data$month_no>=201508 & per_data$month_no<=201608 & per_data$loan_org_month_no<=201507 & per_data$loan_org_month_no>=201201 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2015-12-01",]
+default_sample <- per_data[per_data$month_no>=201510 & per_data$month_no<=201608 & per_data$loan_org_month_no<=201507 & per_data$loan_org_month_no>=201201 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2015-06-01",]
 default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
 
 # default_sample['time_to_maturity'] <- default_sample$loan_term - default_sample$loan_age
@@ -255,13 +255,15 @@ default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
 
 reg_formula <- as.formula("NPL~post*treat+loan_age+I(loan_age^2)|facility_no+month_district|0|facility_no")
 regs <- list()
-regs[[1]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") & default_sample$month_no<=201602,])
-regs[[2]] <- felm(reg_formula,data=default_sample[default_sample$month_no<=201602,])
+regs[[1]] <- felm(reg_formula,data=default_sample[default_sample$month_no<=201603,])
+regs[[2]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") & default_sample$month_no<=201603,])
+regs[[3]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("threewheeler","minitruck") & default_sample$month_no<=201603,])
 
-default_sample <- default_sample[default_sample$month_no>=201602 & default_sample$last_payment_date>="2016-08-01",]
+default_sample <- default_sample[default_sample$month_no>=201602 & default_sample$last_payment_date>="2016-04-01",]
 default_sample$post <- ifelse(default_sample$month_no>=201605,1,0)
-regs[[3]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") ,])
 regs[[4]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("threewheeler","motorbike","minitruck"),])
+regs[[5]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") ,])
+regs[[6]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("minitruck","threewheeler") ,])
 # regs[[4]] <- felm(NPL~post*treat|facility_no,data=default_sample)
 
 stargazer(regs,type = "text")
@@ -269,20 +271,23 @@ stargazer(regs,type = "text")
 
 
 ```{r main_result_controls}
-default_sample <- per_data[per_data$month_no>=201508 & per_data$month_no<=201608 & per_data$loan_org_month_no<=201507 & per_data$loan_org_month_no>=201201 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2016-01-01",]
+default_sample <- per_data[per_data$month_no>=201510 & per_data$month_no<=201608 & per_data$loan_org_month_no<=201507 & per_data$loan_org_month_no>=201201 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2015-06-01",]
 default_sample['time_to_maturity'] <- default_sample$loan_term - default_sample$loan_age
 default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
 
-reg_formula <- as.formula("NPL~post*treat+other_deposits+loan_age+I(loan_age^2)+time_to_maturity+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|loan_org_year+district+month_no|0|facility_no")
+reg_formula <- as.formula("NPL~post*treat+other_deposits+loan_age+I(loan_age^2)+time_to_maturity+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|loan_org_year+month_district|0|facility_no")
 regs <- list()
-regs[[1]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") & default_sample$month_no<=201602,])
-regs[[2]] <- felm(reg_formula,data=default_sample[default_sample$month_no<=201602,])
-default_sample <- default_sample[default_sample$month_no>=201602  & default_sample$last_payment_date>="2016-08-01",]
+regs[[1]] <- felm(reg_formula,data=default_sample[default_sample$month_no<=201603,])
+regs[[2]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler") & default_sample$month_no<=201603,])
+regs[[3]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("minitruck","threewheeler") & default_sample$month_no<=201603,])
+default_sample <- default_sample[default_sample$month_no>=201602 & default_sample$last_payment_date>="2016-04-01",]
 default_sample$post <- ifelse(default_sample$month_no>=201605,1,0)
-regs[[3]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler"),])
 regs[[4]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("minitruck","threewheeler","motorbike"),])
+regs[[5]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("motorbike","threewheeler"),])
+regs[[6]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("minitruck","threewheeler"),])
 
-stargazer(regs,type = "text",dep.var.labels = "")
+
+stargazer(regs,type = "text",dep.var.labels = "",no.space = TRUE)
 ```
 
 
@@ -373,7 +378,7 @@ ddply(temp2,.(treat),summarise,redefault=mean(redefault))
 
 
 ```{r main_result_placebo}
-default_sample <- per_data[per_data$month_no>=201502 & per_data$month_no<=201508 & per_data$loan_org_month_no<=201407 & per_data$loan_org_month_no>=201201 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2015-12-01",]
+default_sample <- per_data[per_data$month_no>=201502 & per_data$month_no<=201508 & per_data$loan_org_month_no<=201411 & per_data$loan_org_month_no>=201201 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2015-12-01",]
 default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
 default_sample$post <- ifelse(default_sample$month_no>=201505,1,0)
 default_sample['time_to_maturity'] <- default_sample$loan_term - default_sample$loan_age
@@ -384,7 +389,7 @@ default_sample['time_to_maturity'] <- default_sample$loan_term - default_sample$
 reg_formula <- as.formula("NPL~post*treat+loan_age+I(loan_age^2)|facility_no+month_district|0|facility_no")
 regs <- list()
 regs[[1]] <- felm(reg_formula,data=default_sample)
-reg_formula <- as.formula("NPL~post*treat+other_deposits+loan_age+I(loan_age^2)+time_to_maturity+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|loan_org_month_no+month_district|0|facility_no")
+reg_formula <- as.formula("NPL~post*treat+other_deposits+loan_age+I(loan_age^2)+time_to_maturity+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|loan_org_month_no+month_district+type|0|facility_no")
 regs[[2]] <- felm(reg_formula,data=default_sample)
 # 
 # default_sample <- per_data[per_data$month_no>=201702 & per_data$month_no<=201708 & per_data$loan_org_month_no<=201607 & per_data$loan_org_month_no>=201301 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2017-08-01",]
@@ -392,7 +397,7 @@ regs[[2]] <- felm(reg_formula,data=default_sample)
 # default_sample$post <- ifelse(default_sample$month_no>=201705,1,0)
 # regs[[2]] <- felm(reg_formula,data=default_sample)
 
-stargazer(regs,type = "text",dep.var.labels.include = FALSE)
+stargazer(regs,type = "text",dep.var.labels.include = FALSE,no.space = TRUE)
 ```
 
 
