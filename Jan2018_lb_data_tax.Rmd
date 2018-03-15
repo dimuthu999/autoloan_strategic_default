@@ -170,11 +170,79 @@ used_value$vehicle_year <- NULL
 
 used_value <- used_value[used_value$loan_org_month>="2015-06-01" & used_value$loan_org_month<="2016-10-01",]
 
+othervehicle_value <- lb_data[lb_data$vehicle_condition=="USED" & lb_data$type=="other" & lb_data$vehicle_year==2013 & lb_data$make_model %in% c("HONDA FIT ","HONDA DAA-GP1","HONDA DAA-GP1-FIT"),]
+othervehicle_value <- othervehicle_value[othervehicle_value$loan_org_month>"2015-06-01" & othervehicle_value$loan_org_month<="2016-10-01",c("loan_org_month","valuation_org")]
+names(othervehicle_value) <- c("loan_org_month","carsuvvan_2014")
+othervehicle_value <- ddply(othervehicle_value,.(loan_org_month),summarise,carsuvvan_2014=mean(carsuvvan_2014) )
+othervehicle_value$carsuvvan_2014 <- othervehicle_value$carsuvvan_2014/10
+used_value <- merge(used_value,othervehicle_value,by="loan_org_month")
+
+labs <- c("New 3-w","Used  3-w (2012)","Used  3-w (2013)","Used  3-w (2014)","Used Honda Fit (2013)/10")
 used_value_melt <- melt(used_value,id="loan_org_month")
 used_value_melt$value <- used_value_melt$value/1000
 used_value_melt$value <- ifelse(used_value_melt$loan_org_month=="2015-07-01" & used_value_melt$variable=="value_2013",421, used_value_melt$value)
-value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1)+scale_linetype_manual(labels = c("Brand New","Used (2012)","Used (2013)","Used (2014)"),values = c(1,3,4,2))+scale_colour_manual(labels = c("Brand New","Used (2012)","Used (2013)","Used (2014)"),values=c("red","black","black","black"))+ theme_bw()+ylab("Value (LKR '000)")+ plot_options
+used_value_melt$value <- ifelse(used_value_melt$loan_org_month=="2015-12-01" & used_value_melt$variable=="carsuvvan_2014",382, used_value_melt$value)
+used_value_melt$value <- ifelse(used_value_melt$loan_org_month=="2016-03-01" & used_value_melt$variable=="carsuvvan_2014",378, used_value_melt$value)
+value_gr <-  ggplot(used_value_melt,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1)+scale_linetype_manual(labels = labs,values = c(1,3,4,2,5))+scale_colour_manual(labels = labs,values=c("red","black","black","black","gray"))+ theme_bw()+ylab("Value (LKR '000)")+ plot_options
 value_gr
+```
+
+
+```{r value_diff_diff1}
+lb_data['district_month'] <-paste(lb_data$district,lb_data$loan_org_month_no)
+lb_data['year_type'] <- paste(lb_data$vehicle_year,lb_data$type)
+
+used_value <- lb_data[lb_data$vehicle_condition=="USED" &  lb_data$type %in% c("threewheeler","motorbike","minitruck","other") & lb_data$valuation_org<3000000 & lb_data$vehicle_year %in% c(1995:2013),]
+used_value['treat'] <- ifelse(used_value$type=="threewheeler",1,0)
+used_value['make_model_year'] <- paste(used_value$make_model,used_value$vehicle_year)
+used_value <- used_value[used_value$loan_org_month_no %in% c(201505:201606),]
+used_value['months_to_treat'] <- as.factor(used_value$loan_org_month_no-201511)
+# used_value <- used_value[!used_value$loan_org_month_no %in% c(201511,201512),]
+used_value['post'] <- ifelse(used_value$loan_org_month_no>=201601,1,0)
+
+regs <- list()
+reg_formula <- as.formula("log(valuation_org)~months_to_treat*treat|year_type+district_month|0|type")
+regs[[1]] <- felm(reg_formula,data=used_value)
+
+used_value <- lb_data[lb_data$vehicle_condition=="USED" &  lb_data$type %in% c("threewheeler","motorbike","minitruck","other") & lb_data$valuation_org<3000000 & lb_data$vehicle_year %in% c(1995:2013),]
+used_value['treat'] <- ifelse(used_value$type=="threewheeler",1,0)
+used_value['make_model_year'] <- paste(used_value$make_model,used_value$vehicle_year)
+used_value <- used_value[used_value$loan_org_month_no %in% c(201601:201610),]
+used_value['months_to_treat'] <- as.factor(used_value$loan_org_month_no-201606)
+# used_value <- used_value[!used_value$loan_org_month_no %in% c(201605,201606),]
+used_value['post'] <- ifelse(used_value$loan_org_month_no>201607,1,0)
+
+regs[[2]] <- felm(reg_formula,data=used_value)
+# stargazer(regs,type = "text",dep.var.labels.include = FALSE,no.space = TRUE)
+
+```
+
+
+
+```{r value_diff_diff_graph}
+xvalues <- c(-5:5)
+tax_change_1_coef <-  c(0.022,-0.018,0.042,0.018,0.011,0.039,0.079,0.078,0.046,0.099,0.087)
+tax_change_2_se_ub <- tax_change_1_coef + c(0.029, 0.022,0.023,0.028,0.036,0.031,0.013,0.024,0.042,0.034,0.043)*1.96
+tax_change_2_se_lb <- tax_change_1_coef - c(0.029, 0.022,0.023,0.028,0.036,0.031,0.013,0.024,0.042,0.034,0.043)*1.96
+
+df <- as.data.frame(cbind(xvalues,tax_change_1_coef))
+p<- ggplot(df, aes(x=xvalues, y=tax_change_1_coef)) + geom_hline(yintercept = 0)+
+  geom_point(color="red")+geom_errorbar(aes(ymin=tax_change_2_se_lb, ymax=tax_change_2_se_ub), width=0,
+                 position=position_dodge(0))+ scale_x_continuous(breaks=xvalues)+ theme_bw()+ylab("Coefficient") + xlab("Months Since Tax Change")+ annotate("rect",xmin=-0.1, xmax=0.1, ymin=min(tax_change_2_se_lb), ymax=max(tax_change_2_se_ub),alpha=0.2)+theme(legend.title=element_blank(),panel.border = element_blank(), axis.line.x = element_line(color = 'gray80'))
+p
+
+
+tax_change_1_coef <-  c(-0.026,0.023,0.015,-0.005,0.005,-0.0004,0.019,0.048,0.064,0.066,0.101)
+tax_change_2_se_ub <- tax_change_1_coef + c(0.019, 0.012,0.023,0.011,0.022,0.019,0.011,0.018,0.027,0.009,0.014)*1.96
+tax_change_2_se_lb <- tax_change_1_coef - c(0.019, 0.012,0.023,0.011,0.022,0.019,0.011,0.018,0.027,0.009,0.014)*1.96
+
+df <- as.data.frame(cbind(xvalues,tax_change_1_coef))
+
+q<- ggplot(df, aes(x=xvalues, y=tax_change_1_coef)) + geom_hline(yintercept = 0)+
+  geom_point(color="red")+geom_errorbar(aes(ymin=tax_change_2_se_lb, ymax=tax_change_2_se_ub), width=0,
+                 position=position_dodge(0))+ scale_x_continuous(breaks=xvalues)+ theme_bw()+ylab("Coefficient") + xlab("Months Since Tax Change")+ annotate("rect",xmin=-0.1, xmax=0.1, ymin=min(tax_change_2_se_lb), ymax=max(tax_change_2_se_ub),alpha=0.2)+theme(legend.title=element_blank(),panel.border = element_blank(), axis.line.x = element_line(color = 'gray80'))
+q
+
 ```
 
 
@@ -275,6 +343,62 @@ regs[[4]] <- felm(reg_formula_ctrl,data=default_sample[default_sample$type %in% 
 stargazer(regs,type = "text",dep.var.labels.include = FALSE,no.space = TRUE)
 ```
 
+```{r main_result_graph_reg}
+default_sample <- per_data[per_data$month_no>=201506 & per_data$month_no<=201609 & per_data$loan_org_month_no<=201507  & per_data$loan_age<=per_data$loan_term & per_data$valuation_org<3000000,]
+default_sample['treat'] <- ifelse(default_sample$type=="threewheeler",1,0)
+default_sample['time_to_maturity'] <- default_sample$loan_term - default_sample$loan_age
+default_sample$month <- as.factor(default_sample$month)
+# default_sample['time_to_maturity'] <- default_sample$loan_term - default_sample$loan_age
+# default_sample$interest_rate <- default_sample$interest_rate/1200
+# default_sample['loan_balance_capital'] <- -(default_sample$monthly_rental/default_sample$interest_rate)* (1-(1+default_sample$interest_rate)^(default_sample$time_to_maturity))
+# used_value <- lb_data[lb_data$vehicle_condition=="USED" & lb_data$type=="threewheeler",]
+# used_value <- ddply(used_value,.(vehicle_year,loan_org_month),summarise,used_vehicle_value = median(valuation_org))
+# used_value['month_no'] <- as.numeric(paste(format(used_value$loan_org_month,"%Y"),format(used_value$loan_org_month,"%m"),sep=""))
+# used_value$loan_org_month <-NULL
+# 
+# default_sample <- merge(default_sample,used_value,by=c("month_no","vehicle_year"))
+# default_sample['ltv_capital'] <- floor(default_sample$loan_balance_capital*100/default_sample$used_vehicle_value)
+
+
+
+reg_formula <- as.formula("NPL~month*treat|facility_no+month_district|0|facility_no")
+
+regs <- list()
+regs[[1]] <- felm(reg_formula,data=default_sample[default_sample$month_no<=201605 & default_sample$type %in% c("threewheeler","motorbike","minitruck"),])
+default_sample <- default_sample[default_sample$month_no>=201511 ,]#& default_sample$last_payment_date>="2016-04-01",]
+default_sample$post <- ifelse(default_sample$month_no>=201607,1,0)
+regs[[2]] <- felm(reg_formula,data=default_sample[default_sample$type %in% c("threewheeler","motorbike","minitruck","other"),])
+
+# regs[[4]] <- felm(NPL~post*treat|facility_no,data=default_sample)
+
+# stargazer(regs,type = "text",dep.var.labels.include = FALSE,no.space = TRUE,digits = 4)
+```
+
+
+```{r main_result_graph}
+xvalues <- c(-4:4)
+tax_change_1_coef <-  c(0.0001,0.0010,0.0008,0.0015,-0.0059,-0.0080,-0.0085,-0.0094,-0.0105)
+tax_change_2_se_ub <- tax_change_1_coef + c(0.0005, 0.0007,0.0009,0.0010,0.0014,0.0016,0.0017,0.0017,0.0017)*1.96
+tax_change_2_se_lb <- tax_change_1_coef - c(0.0005, 0.0007,0.0009,0.0010,0.0014,0.0016,0.0017,0.0017,0.0017)*1.96
+
+df <- as.data.frame(cbind(xvalues,tax_change_1_coef))
+p<- ggplot(df, aes(x=xvalues, y=tax_change_1_coef)) + geom_hline(yintercept = 0)+
+  geom_point(color="red")+geom_errorbar(aes(ymin=tax_change_2_se_lb, ymax=tax_change_2_se_ub), width=0,
+                 position=position_dodge(0))+ scale_x_continuous(breaks=xvalues)+ theme_bw()+ylab("Coefficient") + xlab("Months Since Tax Change")+ annotate("rect",xmin=-0.1, xmax=0.1, ymin=min(tax_change_2_se_lb), ymax=max(tax_change_2_se_ub),alpha=0.2)+theme(legend.title=element_blank(),panel.border = element_blank(), axis.line.x = element_line(color = 'gray80'))
+p
+
+
+tax_change_1_coef <-  c(-0.0004,-0.0003,-0.0006,-0.0011,-0.0045,-0.0044,-0.0046,-0.0059,-0.0057)
+tax_change_2_se_ub <- tax_change_1_coef + c(0.0005, 0.0007,0.0008,0.0010,0.0011,0.0012,0.0013,0.0013,0.0013)*1.96
+tax_change_2_se_lb <- tax_change_1_coef - c(0.0005, 0.0007,0.0008,0.0010,0.0011,0.0012,0.0013,0.0013,0.0013)*1.96
+
+df <- as.data.frame(cbind(xvalues,tax_change_1_coef))
+
+q<- ggplot(df, aes(x=xvalues, y=tax_change_1_coef)) + geom_hline(yintercept = 0)+
+  geom_point(color="red")+geom_errorbar(aes(ymin=tax_change_2_se_lb, ymax=tax_change_2_se_ub), width=0,
+                 position=position_dodge(0))+ scale_x_continuous(breaks=xvalues)+ theme_bw()+ylab("Coefficient") + xlab("Months Since Tax Change")+ annotate("rect",xmin=-0.1, xmax=0.1, ymin=min(tax_change_2_se_lb), ymax=max(tax_change_2_se_ub),alpha=0.2)+theme(legend.title=element_blank(),panel.border = element_blank(), axis.line.x = element_line(color = 'gray80'))
+q
+```
 
 ```{r matched_mb}
 default_sample <- per_data[per_data$month_no>=201510 & per_data$month_no<=201603 & per_data$loan_org_month_no<=201507 & per_data$loan_org_month_no>=201201 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2015-06-01",]

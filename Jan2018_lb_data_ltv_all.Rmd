@@ -252,6 +252,29 @@ stargazer(regs,type = "text",dep.var.labels.include = FALSE,omit.stat = c("f","r
 
 ```
 
+
+```{r}
+temp <- lb_data[lb_data$loan_org_month_no >= 201605 & lb_data$loan_org_month_no<=201704 & lb_data$vehicle_condition=="USED" & lb_data$type=="cars" & lb_data$make_model %in% c("TATA ACE","TATA ACE EX "),]
+
+t <- ddply(temp[temp$vehicle_year %in% c(2010:2012),],.(vehicle_year,loan_org_month),summarise,value=mean(valuation_org)/1000)
+
+labs <- c("2010","2011","2012")
+value_gr <-  ggplot(t,aes(x=loan_org_month, y=value,colour=vehicle_year)) + geom_line(aes(linetype=vehicle_year), size=1)+scale_linetype_manual(labels = labs,values = c(1,2,3))+scale_colour_manual(labels = labs,values=c("black","black","black"))+ theme_bw()+ylab("Value (LKR '000)")+ plot_options
+value_gr
+```
+
+
+```{r}
+temp <- lb_data[lb_data$loan_org_month_no >= 201605 & lb_data$loan_org_month_no<=201704 & lb_data$vehicle_condition=="USED" & lb_data$type=="trucks" & lb_data$make_model %in% c("ISUZU ELF","ISUZU ELF-OPEN","ISUZU ELF - OPEN","ISUZU ELF 250", "ISUZU ELF 350"),]
+# temp <- lb_data[lb_data$loan_org_month_no >= 201601 & lb_data$loan_org_month_no<=201708 & lb_data$vehicle_condition=="USED" & lb_data$type=="cars" & lb_data$make_model %in% c("MARUTI 800","MARUTI 800"),]
+
+t <- ddply(temp[temp$vehicle_year %in% c(1996:1997),],.(vehicle_year,loan_org_month),summarise,value=mean(valuation_org)/1000)
+
+labs <- c("2005","2006")
+value_gr <-  ggplot(t,aes(x=loan_org_month, y=value,colour=vehicle_year)) + geom_line(aes(linetype=vehicle_year), size=1)+scale_linetype_manual(labels = labs,values = c(1,2))+scale_colour_manual(labels = labs,values=c("black","black"))+ theme_bw()+ylab("Value (LKR '000)")+ plot_options
+value_gr
+```
+
 ```{r matched_cars}
 default_sample <- per_data[per_data$month_no>=201609 & per_data$month_no<=201705 & per_data$loan_org_month_no<=201601 & per_data$loan_org_month_no>=201406 & per_data$loan_age>2 & per_data$loan_age<=per_data$loan_term & per_data$last_payment_date>="2017-06-01",]
 # default_sample <- default_sample[!default_sample$month_no %in% c(201611,201612,201701),]

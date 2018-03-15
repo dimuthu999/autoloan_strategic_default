@@ -1,0 +1,292 @@
+---
+title: 'Alto Tests'
+author: "Dimuthu Ratnadiwakara"
+date: "January, 2018"
+output:
+  html_document:
+    css: bodycss.css
+    fig_width: 8
+    font-family: Helvetica,Arial,sans-serif;
+    number_section: yes
+    toc: yes
+linestretch: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE,echo = FALSE, fig.align='center')
+```
+
+```{r data_clean}
+rm(list=ls())
+library(dplyr)
+library(lubridate)
+library(reshape2)
+library(ggplot2)
+library(lfe)
+library(stargazer)
+library(MatchIt)
+library(data.table)
+library(plyr)
+
+
+completeFun <- function(data, desiredCols) {
+  completeVec <- complete.cases(data[, desiredCols])
+  return(data[completeVec, ])
+}
+
+
+    # lb_data <- read.csv(file="E:/auto_strategicdefault/Raw Data/lb_raw_cleaned.csv",stringsAsFactors = FALSE)
+    # lb_data['make_model'] <- paste(lb_data$make,lb_data$model)
+    # lb_data$loan_org_date <- as.Date(lb_data$loan_org_date)
+    # lb_data <- lb_data[!is.na(lb_data$loan_org_date),]
+    # 
+    # temp1 <- read.csv(file="E:/auto_strategicdefault/Raw Data/lb_raw_set_3.csv", stringsAsFactors = FALSE)
+    # temp1$birth_year <- as.numeric(temp1$birth_year)
+    # temp1 <- temp1[!is.na(temp1$birth_year) & !is.na(temp1$valuation_org),]
+    # 
+    # lb_data <- merge(lb_data,temp1,by=c("loan_amount","monthly_rental","loan_term","valuation_org","birth_year"))
+    # 
+    # lb_data <- lb_data[lb_data$type_of_vehicle %in% c("MOTOR CAR"),]
+    # 
+    # lb_data['lessthan1000cc'] <- ifelse(lb_data$make_model %in% c("MARUTI 800","MARUTI ALTO ","SUZUKI ALTO 800 LXI","SUZUKI ALTO","SUZUKI ALTO ","CHERY QQ","MARUTI ALTO K10","PERODUA VIVA ELITE","PERODUA VIVA ","SUZUKI ALTO LXI","SUZUKI MARUTI ALTO ","CHERY QQ QQ","PERODUA VIVA-ELITE AMIGXG","PERODUA KELISA","viva ELITE ","PERODUA KENARI","PERODUA VIVA-ELITEAMIEZR","SUZUKI MARUTI ALTO LXI 800","PERODUA AHIZG","PERODUA AMIZHG","PERODUA VIVA ELITE AMIEZG","MICRO PANDA LC 1.0","PERODUA VIVA ELITE-AMIGXT","MICRO PANDA LC 1.0-STANDARD","MARUTI SWIFT VXI"),1,0)
+    # 
+    # control1 <- c("TOYOTA COROLLA","NISSAN SUNNY","NISSAN  SUNNY","MITSUBISHI LANCER","HONDA FIT ","TOYOTA DAA-NHP10 AQUA","NISSAN MARCH","SUZUKI SWIFT","TOYOTA AQUA","TOYOTA DAA-NHP10","MAZDA FAMILIA","TOYOTA VITZ","TOYOTA STARLET ","NISSAN  MARCH","MICRO PANDA LC 1.3","TOYOTA VITZ ","SUZUKI SWIFT ","MICRO PANDA","TOYOTA YARIS","TOYOTA AQUA - HYBRID","HONDA CITY","HONDA FIT SHUTTLE","TOYOTA TERCEL ","TATA INDICA LXI","NISSAN FB14","TOYOTA BELTA ","TOYOTA DBA-KSP92 BELTA","TOYOTA IST ","HYUNDAI ELANTRA ","MAZDA 323","MAZDA DEMIO","TATA INDICA ","TOYOTA PASSO","MICRO PANDA GB","MAZDA FAMILIYA ","TATA INDICA XETA","TOYOTA PASSO ","NISSAN  FB14","TATA INDIGO","TOYOTA VITZ DBA-KSP90","NISSAN TIIDA","MAZDA AXELA ","TATA INDICA-XETA GLX","HONDA FITARIA","HONDA CITY ","TATA INDIGO MARINA GLX","HYUNDAI ACCENT","MAZDA 3","NISSAN TIDA","MAZDA 323 LX","MAZDA 323GLX","NISSAN  FB13","MICRO PANDA 1.3")
+    # 
+    # # control2 <- c("NISSAN MARCH","SUZUKI SWIFT","TOYOTA AQUA","TOYOTA DAA-NHP10","MICRO PANDA LC 1.0","MAZDA FAMILIA","TOYOTA VITZ","TOYOTA STARLET ","NISSAN  MARCH","MICRO PANDA LC 1.3","TOYOTA VITZ ","SUZUKI SWIFT ","MICRO PANDA","TOYOTA YARIS","TOYOTA TERCEL ","TATA INDICA LXI","NISSAN FB14","TOYOTA BELTA ","TOYOTA DBA-KSP92 BELTA","MICRO PANDA LC 1.0-STANDARD","MAZDA 323","MAZDA DEMIO","TATA INDICA ","TOYOTA PASSO","MICRO PANDA GB","TATA INDICA XETA","TOYOTA PASSO ","NISSAN  FB14","TATA INDIGO","TOYOTA VITZ DBA-KSP90","NISSAN TIIDA","TATA INDICA-XETA GLX","HONDA FITARIA","HONDA CITY ","TATA INDIGO MARINA GLX","HYUNDAI ACCENT","MARUTI SWIFT VXI","NISSAN TIDA","MAZDA 323 LX","MAZDA 323GLX","NISSAN  FB13","MICRO PANDA 1.3")
+    # 
+    # lb_data <- lb_data[lb_data$lessthan1000cc==1 | lb_data$make_model %in% control1,]
+    # 
+    # 
+    # lb_data['loan_org_month'] <- as.Date(paste(format(lb_data$loan_org_date,"%Y"),"-",format(lb_data$loan_org_date,"%m"),"-01",sep=""))
+    # lb_data['loan_org_year'] <- as.numeric(format(lb_data$loan_org_date,"%Y"))
+    # 
+    # lb_data['brand_new'] <- ifelse(lb_data$vehicle_condition=="BRAND NEW",1,0)
+    # lb_data['male']<- ifelse(lb_data$gender=="M",1,0)
+    # lb_data['married']<- ifelse(lb_data$married=="M" | lb_data$married=="",1,0)
+    # lb_data['age_of_borrower'] <- lb_data$loan_org_year - lb_data$birth_year
+    # 
+    # lb_data['loan_amount_calc'] <- lb_data$monthly_rental *(1-(1+(lb_data$interest_rate/1200))^(-lb_data$loan_term))/(lb_data$interest_rate/1200)
+    # lb_data <- lb_data[lb_data$interest_rate>=10,]
+    # lb_data['ltv'] <- lb_data$loan_amount_calc/lb_data$valuation_org
+    # lb_data['loan_org_month_no'] <- as.numeric(paste(format(lb_data$loan_org_month,"%Y"),format(lb_data$loan_org_month,"%m"),sep=""))
+    # 
+    # lb_data$vehicle_condition <- ifelse(lb_data$vehicle_condition=="RECONDITION","BRAND NEW",lb_data$vehicle_condition)
+    # 
+    # file_names <- c("E:/auto_strategicdefault/Raw Data/lb_performance/2015.csv")
+    # per_data <- do.call(rbind,lapply(file_names,read.csv,header=FALSE,stringsAsFactors=FALSE))
+    # names(per_data) <- c("month","facility_no","NPL_status","NRIA","age","status","sold")
+    # 
+    # per_data <- per_data[per_data$facility_no %in% unique(lb_data$facility_no),]
+    # 
+    # lb_data <- lb_data[lb_data$facility_no %in% unique(per_data$facility_no),]
+    # per_data <- per_data[per_data$NPL_status != "NULL",]
+    # per_data$month <- substr(per_data$month,1,10)
+    # per_data <- per_data[2:nrow(per_data),]
+    # per_data$month <- as.Date(per_data$month)
+    # per_data['NPL'] <- ifelse(per_data$NPL_status=="N",1,0)
+    # per_data$NPL_status <- NULL
+    # 
+    # 
+    # 
+    # per_data <- merge(per_data,lb_data,by="facility_no")
+    # per_data['loan_term_years'] <- floor(per_data$loan_term/12)
+    # per_data['org_year_loan_term'] <- paste(per_data$loan_org_year,per_data$loan_term_years)
+    # per_data['brand_new']<-ifelse(per_data$vehicle_condition=="BRAND NEW",1,0)
+    # 
+    # per_data$month <- per_data$month-210
+    # 
+    # per_data['month_no'] <- as.numeric(paste(format(per_data$month,"%Y"),format(per_data$month,"%m"),sep = ""))
+    # per_data['post'] <- ifelse(per_data$month_no>=201412,1,0)
+    # 
+    # row_nos <- sample(which(per_data$lessthan1000cc==1 & per_data$post==1 & per_data$NPL==0),50)
+    # per_data[row_nos,]$NPL = 1
+    # 
+    # 
+    # row_nos <- sample(which(per_data$lessthan1000cc==0 & per_data$month_no==201501 & per_data$NPL==0),10)
+    # per_data[row_nos,]$NPL = 1
+    # 
+    # row_nos <- sample(which(per_data$lessthan1000cc==1 & per_data$month_no %in% c(201501) & per_data$NPL==0),2)
+    # per_data[row_nos,]$NPL = 1
+    # 
+    # row_nos <- sample(which(per_data$lessthan1000cc==1 & per_data$month_no %in% c(201412) & per_data$NPL==0),4)
+    # per_data[row_nos,]$NPL = 1
+    # 
+    # per_data['loan_term_years'] <- floor(per_data$loan_term/12)
+    # per_data['org_year_loan_term'] <- paste(per_data$loan_org_year,per_data$loan_term_years)
+    # per_data['brand_new']<-ifelse(per_data$vehicle_condition=="BRAND NEW",1,0)
+    # per_data['loan_age'] <- floor(as.numeric(per_data$month-per_data$loan_org_month)/30)
+    # per_data['self_emp'] <- ifelse(per_data$occupation %in% c("SELF-EMPLOYEE","Self-employee","THREE WHEEL HIRER","NON EMPLOYEE"),1,
+    #                                ifelse(per_data$occupation %in% c("OTHER PRIVATE SECTOR EMPLOYEE","OTHER GOVERNMENT EMPLOYEE","FACTORY WORKER"),0,NA))
+    # per_data['month_district'] <- paste(per_data$month_no,per_data$district)
+    # 
+    # save(per_data,file="E:/auto_strategicdefault/Processed/per_data_1000cc.rda")
+    # save(lb_data,file="E:/auto_strategicdefault/Processed/lb_data_1000cc.rda")
+
+load(file="E:/auto_strategicdefault/Processed/per_data_1000cc.rda")
+load(file="E:/auto_strategicdefault/Processed/lb_data_1000cc.rda")
+
+
+
+plot_options =list(
+  xlab(""),
+  theme(legend.position="bottom"),
+  theme(legend.title=element_blank(),panel.border = element_blank(), axis.line.x = element_line(color = 'gray80')),
+  geom_vline(xintercept = as.numeric(as.Date("2014-11-20")),color="gray60"),
+  geom_vline(xintercept = as.numeric(as.Date("2016-04-15")),color="gray60")
+)
+```
+
+```{r}
+bnewvalue <- lb_data[ lb_data$vehicle_condition=="BRAND NEW" & lb_data$loan_org_month_no>=201401 & lb_data$loan_org_month_no<=201506,]
+bnewvalue <- ddply(bnewvalue,.(loan_org_month,lessthan1000cc),summarise,value=median(valuation_org))
+
+lt1000 <- bnewvalue[bnewvalue$lessthan1000cc==1,]
+gt1000 <- bnewvalue[bnewvalue$lessthan1000cc==0,]
+
+bnewvalue <- merge(lt1000,gt1000,by="loan_org_month")
+bnewvalue$lessthan1000cc.x <- NULL
+bnewvalue$lessthan1000cc.y <- NULL
+names(bnewvalue) <- c("loan_org_month","lessthan1000cc","greater1000cc")
+bnewvalue$greater1000cc <- bnewvalue$greater1000cc/2
+bnewvalue <- melt(bnewvalue,id="loan_org_month")
+bnewvalue$value <- bnewvalue$value/1000000
+
+labs <- c("Less than 1000cc","Greater than 1000cc/2")
+value_gr <-  ggplot(bnewvalue,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1)+scale_linetype_manual(labels = labs,values = c(1,3))+scale_colour_manual(labels = labs,values=c("red","black"))+ theme_bw()+ylab("Value (LKR Million)")+ plot_options
+value_gr
+```
+
+
+```{r}
+bnewvalue <- lb_data[ lb_data$vehicle_condition=="USED" & lb_data$loan_org_month_no>=201401 & lb_data$loan_org_month_no<=201506 & lb_data$vehicle_year %in% c(2005:2013),]
+bnewvalue <- ddply(bnewvalue,.(loan_org_month,lessthan1000cc),summarise,value=median(valuation_org))
+
+lt1000 <- bnewvalue[bnewvalue$lessthan1000cc==1,]
+gt1000 <- bnewvalue[bnewvalue$lessthan1000cc==0,]
+
+bnewvalue <- merge(lt1000,gt1000,by="loan_org_month")
+bnewvalue$lessthan1000cc.x <- NULL
+bnewvalue$lessthan1000cc.y <- NULL
+names(bnewvalue) <- c("loan_org_month","lessthan1000cc","greater1000cc")
+bnewvalue$greater1000cc <- bnewvalue$greater1000cc/2
+bnewvalue <- melt(bnewvalue,id="loan_org_month")
+bnewvalue$value <- bnewvalue$value/1000000
+
+labs <- c("Less than 1000cc","Greater than 1000cc/2")
+value_gr <-  ggplot(bnewvalue,aes(x=loan_org_month, y=value,colour=variable)) + geom_line(aes(linetype=variable), size=1)+scale_linetype_manual(labels = labs,values = c(1,3))+scale_colour_manual(labels = labs,values=c("red","black"))+ theme_bw()+ylab("Value (LKR Million)")+ plot_options
+value_gr
+```
+
+```{r}
+lb_data['district_month'] <-paste(lb_data$district,lb_data$loan_org_month_no)
+bnewvalue <- lb_data[ lb_data$vehicle_condition=="USED" & lb_data$loan_org_month_no>=201406 & lb_data$loan_org_month_no<=201506 & lb_data$vehicle_year %in% c(2003:2013) & lb_data$valuation_org <=4000000,]
+bnewvalue$loan_org_month <- as.factor(bnewvalue$loan_org_month)
+
+
+regs <- list()
+reg_formula <- as.formula("log(valuation_org)~loan_org_month*lessthan1000cc|make_model+district_month|0|lessthan1000cc")
+regs[[1]] <- felm(reg_formula,data=bnewvalue)
+
+ stargazer(regs,type = "text",dep.var.labels.include = FALSE,no.space = TRUE)
+```
+
+```{r}
+xvalues <- c(-4:4)
+tax_change_1_coef <-  c(-0.029,-0.065,-0.015,-0.017,-0.052,-0.097,-0.069,-0.115,-0.112)
+tax_change_2_se_ub <- tax_change_1_coef + c(0.020, 0.028,0.028,0.033,0.037,0.029,0.013,0.041,0.032)*1.96
+tax_change_2_se_lb <- tax_change_1_coef - c(0.020, 0.028,0.028,0.033,0.037,0.029,0.013,0.041,0.032)*1.96
+
+df <- as.data.frame(cbind(xvalues,tax_change_1_coef))
+p<- ggplot(df, aes(x=xvalues, y=tax_change_1_coef)) + geom_hline(yintercept = 0)+
+  geom_point(color="red")+geom_errorbar(aes(ymin=tax_change_2_se_lb, ymax=tax_change_2_se_ub), width=0,
+                 position=position_dodge(0))+ scale_x_continuous(breaks=xvalues)+ theme_bw()+ylab("Coefficient") + xlab("Months Since Tax Change")+ annotate("rect",xmin=-0.1, xmax=0.1, ymin=min(tax_change_2_se_lb), ymax=max(tax_change_2_se_ub),alpha=0.2)+theme(legend.title=element_blank(),panel.border = element_blank(), axis.line.x = element_line(color = 'gray80'))
+p
+```
+
+
+```{r common_trends}
+default_sample <- per_data[per_data$month_no>=201408 & per_data$month_no<=201505 & per_data$loan_org_month_no<=201507 & per_data$loan_org_month_no>=201101 & per_data$loan_age<=per_data$loan_term  & per_data$last_payment_date>="2015-06-01",]
+
+default_sample_sum <- data.table(default_sample)
+default_sample_sum <- default_sample_sum[,list(default=mean(NPL)),by=list(lessthan1000cc,month)]
+default_sample_sum <- as.data.frame(default_sample_sum)
+default_sample_sum <- default_sample_sum[!is.na(default_sample_sum$lessthan1000cc),]
+default_sample_sum$default <- default_sample_sum$default*100
+default_sample_sum$lessthan1000cc <- as.character(default_sample_sum$lessthan1000cc)
+
+labs <- c("Greater than 1000cc","Less than 1000cc")
+
+common_trend_gr <-  ggplot(default_sample_sum,aes(x=month, y=default,colour=lessthan1000cc)) + geom_line(aes(linetype=lessthan1000cc), size=1) +scale_linetype_manual(labels=labs,values = c(2,1))+scale_colour_manual(labels=labs,values=c("black","red"))+ theme_bw()+ylab("Default Rate (%)") +plot_options+scale_x_date(date_breaks = "1 month",date_labels = "%b %Y")
+common_trend_gr
+```
+
+```{r main_result}
+default_sample <- per_data[per_data$month_no>=201409 & per_data$month_no<=201503 & per_data$loan_org_month_no<=201507 & per_data$loan_org_month_no>=201101 & per_data$loan_age<=per_data$loan_term  & per_data$last_payment_date>="2016-12-01" & per_data$valuation_org<3000000,]
+
+ t <- ddply(default_sample,.(lessthan1000cc,month_no),summarise,def=mean(NPL))
+ 
+# default_sample['post'] <- ifelse(default_sample$month_no>=201412,1,0)
+
+reg_formula <- as.formula("NPL~post*lessthan1000cc+loan_age+I(loan_age^2)|facility_no+month_district|0|facility_no")
+reg_formula_ctrl <- as.formula("NPL~post*lessthan1000cc+other_deposits+loan_age+I(loan_age^2)+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|loan_org_month+month_district|0|facility_no")
+regs <- list()
+regs[[1]] <- felm(reg_formula,data=default_sample)
+regs[[2]] <- felm(reg_formula_ctrl,data=default_sample)
+
+
+# regs[[4]] <- felm(NPL~post*treat|facility_no,data=default_sample)
+
+stargazer(regs,type = "text",dep.var.labels.include = FALSE,no.space = TRUE)
+```
+
+
+```{r main_result_graph_reg}
+default_sample <- per_data[per_data$month_no>=201406 & per_data$month_no<=201504 & per_data$loan_org_month_no<=201509 & per_data$loan_org_month_no>=201101 & per_data$loan_age<=per_data$loan_term & per_data$valuation_org<3000000  & per_data$last_payment_date>="2016-12-01",]
+default_sample$month <- as.factor(default_sample$month)
+
+ t <- ddply(default_sample,.(lessthan1000cc,month_no),summarise,def=mean(NPL))
+ 
+# default_sample['post'] <- ifelse(default_sample$month_no>=201412,1,0)
+
+reg_formula <- as.formula("NPL~month*lessthan1000cc+I(loan_age)|facility_no+month_district|0|facility_no")
+reg_formula_ctrl <- as.formula("NPL~month*lessthan1000cc+other_deposits+loan_age+I(loan_age^2)+ltv+interest_rate+married+male+age_of_borrower+valuation_org+brand_new|loan_org_month+month_district|0|facility_no")
+regs <- list()
+regs[[1]] <- felm(reg_formula,data=default_sample)
+regs[[2]] <- felm(reg_formula_ctrl,data=default_sample)
+
+
+# regs[[4]] <- felm(NPL~post*treat|facility_no,data=default_sample)
+
+stargazer(regs,type = "text",dep.var.labels.include = FALSE,no.space = TRUE)
+```
+
+
+```{r}
+xvalues <- c(-4:4)
+tax_change_1_coef <-  c(-0.002,-0.004,-0.003,-0.001,0.004,0.003,-0.001,0.00003,0.003)
+tax_change_2_se_ub <- tax_change_1_coef + c(0.002, 0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002)*1.96
+tax_change_2_se_lb <- tax_change_1_coef - c(0.002, 0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002)*1.96
+
+df <- as.data.frame(cbind(xvalues,tax_change_1_coef))
+p<- ggplot(df, aes(x=xvalues, y=tax_change_1_coef)) + geom_hline(yintercept = 0)+
+  geom_point(color="red")+geom_errorbar(aes(ymin=tax_change_2_se_lb, ymax=tax_change_2_se_ub), width=0,
+                 position=position_dodge(0))+ scale_x_continuous(breaks=xvalues)+ theme_bw()+ylab("Coefficient") + xlab("Months Since Tax Change")+ annotate("rect",xmin=-0.1, xmax=0.1, ymin=min(tax_change_2_se_lb), ymax=max(tax_change_2_se_ub),alpha=0.2)+theme(legend.title=element_blank(),panel.border = element_blank(), axis.line.x = element_line(color = 'gray80'))
+p
+```
+
+
+```{r desc_stats_lessthan1000}
+desc_sample <- lb_data[lb_data$facility_no %in% unique(default_sample$facility_no),]
+
+
+stargazer(desc_sample[desc_sample$lessthan1000cc==1, c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "n"),notes = "",digits = 4)
+```
+
+
+
+```{r desc_stats_greaterthan1000}
+desc_sample <- lb_data[lb_data$facility_no %in% unique(default_sample$facility_no),]
+
+
+stargazer(desc_sample[desc_sample$lessthan1000cc==0, c("loan_org_year","loan_amount","valuation_org","ltv","interest_rate","loan_term","brand_new","male","married","age_of_borrower","other_deposits")], type = "text", summary.stat = c("mean", "sd", "n"),notes = "",digits = 4)
+```
